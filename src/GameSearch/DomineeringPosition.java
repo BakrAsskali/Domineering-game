@@ -7,6 +7,14 @@ public class DomineeringPosition extends Position{
 
     int [][] board = new int[8][8];
 
+    public DomineeringPosition() {
+        for (int i=0; i<8; i++) {
+            for(int j=0; j<8; j++){
+                board[i][j] = BLANK;
+            }
+        }
+    }
+
     public String toString() {
         StringBuffer sb = new StringBuffer("[");
         for (int i=0; i<8; i++) {
