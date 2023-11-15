@@ -8,9 +8,7 @@ public class Node extends JButton implements ActionListener {
     Node upper;
     int col;
     int row;
-    int hcost;
-    int gcost;
-    int fcost;
+
     boolean start;
     boolean checked;
     public Node(int col,int row){
@@ -25,7 +23,7 @@ public class Node extends JButton implements ActionListener {
         setBackground(Color.orange);
     }
     public void setAsCheckedPlayer2(){
-        setBackground(Color.green);
+        setBackground(Color.yellow);
         setForeground(Color.BLACK);
         checked=true;
     }

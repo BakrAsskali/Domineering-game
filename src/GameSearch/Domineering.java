@@ -1,5 +1,7 @@
 package GameSearch;
 
+import javax.swing.*;
+
 public class Domineering extends GameSearch{
     @Override
     public boolean drawnPosition(Position p) {
@@ -208,5 +210,14 @@ public class Domineering extends GameSearch{
         }
         Domineering d = new Domineering();
         d.playGame(dp, true);
+
+        JFrame window=new JFrame();
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setResizable(false);
+        window.add(new DemoPanel());
+
+        window.pack();
+        window.setLocationRelativeTo(null);
+        window.setVisible(true);
     }
 }

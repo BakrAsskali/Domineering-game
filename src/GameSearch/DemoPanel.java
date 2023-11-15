@@ -7,9 +7,9 @@ import java.awt.event.MouseEvent;
 public class DemoPanel extends JPanel {
     private boolean player1Turn = true; //  player 1 starts
 
-    final int maxCol=20;
-    final int maxRow=20;
-    final int nodeSize=50;
+    final int maxCol=10;
+    final int maxRow=10;
+    final int nodeSize=80;
     final int screenWidth=nodeSize*maxCol;
     final int screenHeight=nodeSize*maxRow;
     Node[][] node=new Node[maxCol][maxRow];
@@ -36,66 +36,81 @@ public class DemoPanel extends JPanel {
         }
         for (int i = 0; i < maxCol; i++) {
             for (int j = 0; j < maxRow; j++) {
-                addMouseListener1ToNode( node[i][j] );
-                addMouseListener2ToNode( node[i][j] );
+                addMouseListenerToNode( node[i][j] );
             }
         }
     }
-    private void addMouseListener1ToNode(Node currentNode) {
+    private void addMouseListenerToNode(Node currentNode) {
         int nodeCol = currentNode.col;
         int nodeRow = currentNode.row;
-        currentNode.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                highlightNode(currentNode);
-                highlightNode(node[nodeCol][nodeRow-1]);
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-                unhighlightNode(currentNode);
-                unhighlightNode(node[nodeCol][nodeRow-1]);
-            }
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                handleClick(currentNode);
-                handleClick(node[nodeCol][nodeRow-1]);
-            }
-        });
+
+        if(player1Turn==true) {
+            currentNode.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    highlightNode(currentNode);
+                    highlightNode(node[nodeCol][nodeRow - 1]);
+                }
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    unhighlightNode(currentNode);
+                    unhighlightNode(node[nodeCol][nodeRow-1]);
+                }
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    handleClick(currentNode);
+                    handleClick(node[nodeCol][nodeRow - 1]);
+                    player1Turn=!player1Turn;
+                    return;
+                }
+            });
+                    }else {
+            currentNode.addMouseListener(new MouseAdapter() {
+                boolean isClicked=false;
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    highlightNode(currentNode);
+                    highlightNode(node[nodeCol+1][nodeRow]);
+                }
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    if(!isClicked) {
+                        unhighlightNode(currentNode);
+                        unhighlightNode(node[nodeCol + 1][nodeRow]);
+                    }
+                }
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    handleClick(currentNode);
+                    handleClick(node[nodeCol+1][nodeRow]);
+                    player1Turn=!player1Turn;
+                    isClicked=true;
+                    return;
+                }
+            });
+        }
+
     }
-    private void addMouseListener2ToNode(Node currentNode) {
-        int nodeCol = currentNode.col;
-        int nodeRow = currentNode.row;
-        currentNode.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                highlightNode(currentNode);
-                highlightNode(node[nodeCol+1][nodeRow]);
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-                unhighlightNode(currentNode);
-                unhighlightNode(node[nodeCol+1][nodeRow]);
-            }
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                handleClick(currentNode);
-                handleClick(node[nodeCol+1][nodeRow]);
-            }
-        });
-    }
+
     private void highlightNode(Node currentNode) {
         int col = currentNode.col;
         int row = currentNode.row;
         // Check if the node above exists and is not checked
-        {
-            if (row > 0 && !playedList.contains(node[col][row - 1]) && !playedList.contains(node[col][row])) {
+
+       if(player1Turn){
+            if (row > 0 && !playedList.contains(node[col][row - 1])) {
                 currentNode.setBackground(Color.LIGHT_GRAY);
-                node[col][row].setBackground(Color.LIGHT_GRAY);
             }
-        }
+        }else {
+           if (row > 0 && !playedList.contains(node[col+1][row ])) {
+               currentNode.setBackground(Color.LIGHT_GRAY);
+           }
+       }
+
     }
     private void unhighlightNode(Node currentNode) {
-        currentNode.setBackground(Color.GRAY);
+
+        currentNode.setBackground(Color.WHITE);
     }
     private void handleClick(Node clickedNode) {
         int col = clickedNode.col;
@@ -103,19 +118,13 @@ public class DemoPanel extends JPanel {
 
         if (player1Turn) {
             // Set color for player 1 and the node above
-            if (row > 0 && !playedList.contains(node[col][row - 1])) {
-                node[col][row - 1].setBackground(Color.BLACK);
-            }
-            clickedNode.setBackground(Color.BLACK);
+
+                 clickedNode.setAsCheckedPlayer1();
         } else {
             // Set color for player 2 and the node to the right
-            if (col < maxCol - 1 && !playedList.contains(node[col + 1][row])) {
-                node[col + 1][row].setBackground(Color.YELLOW);
-            }
-            clickedNode.setBackground(Color.YELLOW);
-        }
+               clickedNode.setAsCheckedPlayer2();
+         }
 
         // Switch player turn
-        player1Turn = !player1Turn;
     }
 }
