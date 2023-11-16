@@ -44,7 +44,7 @@ public class DemoPanel extends JPanel {
         int nodeCol = currentNode.col;
         int nodeRow = currentNode.row;
 
-        if(player1Turn==true) {
+        if(player1Turn) {
             currentNode.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
@@ -61,7 +61,6 @@ public class DemoPanel extends JPanel {
                     handleClick(currentNode);
                     handleClick(node[nodeCol][nodeRow - 1]);
                     player1Turn=!player1Turn;
-                    return;
                 }
             });
                     }else {
@@ -85,7 +84,6 @@ public class DemoPanel extends JPanel {
                     handleClick(node[nodeCol+1][nodeRow]);
                     player1Turn=!player1Turn;
                     isClicked=true;
-                    return;
                 }
             });
         }
