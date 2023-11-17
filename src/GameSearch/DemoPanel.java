@@ -65,7 +65,6 @@ public class DemoPanel extends JPanel {
                 });
                         }else {
                 currentNode.addMouseListener(new MouseAdapter() {
-                    boolean isClicked=false;
                     @Override
                     public void mouseEntered(MouseEvent e) {
                         highlightNode(currentNode);
@@ -73,7 +72,7 @@ public class DemoPanel extends JPanel {
                     }
                     @Override
                     public void mouseExited(MouseEvent e) {
-                        if(!isClicked) {
+                        if(!currentNode.checked) {
                             unhighlightNode(currentNode);
                             unhighlightNode(node[nodeCol + 1][nodeRow]);
                         }else {
@@ -86,7 +85,7 @@ public class DemoPanel extends JPanel {
                         handleClick(currentNode);
                         handleClick(node[nodeCol+1][nodeRow]);
                         player1Turn=!player1Turn;
-                        isClicked=true;
+                        currentNode.checked=true;
 
                     }
                 });
@@ -120,7 +119,6 @@ public class DemoPanel extends JPanel {
 
             if (player1Turn) {
                 // Set color for player 1 and the node above
-
                      clickedNode.setAsCheckedPlayer1();
             } else {
                 // Set color for player 2 and the node to the right
