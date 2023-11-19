@@ -1,6 +1,7 @@
 package GameSearch;
 
 import javax.swing.*;
+import java.util.Scanner;
 
 public class Domineering extends GameSearch{
     @Override
@@ -16,37 +17,23 @@ public class Domineering extends GameSearch{
                 }
             }
         }
-        return false;
+        return ret;
     }
 
     @Override
     public boolean wonPosition(Position p, boolean player) {
-        Boolean ret = false;
+        boolean ret = false;
         DomineeringPosition dp = (DomineeringPosition) p;
         int [][] board = dp.board;
         for (int i=0; i<8; i++) {
             for(int j=0; j<8; j++){
-                if(board[i][j] == DomineeringPosition.BLANK){
-                    if(player){
-                        if(i+1 < 8 && board[i+1][j] == DomineeringPosition.BLANK){
-                            ret = true;
-                            System.out.println("Player won");
+                if(board[i][j] == DomineeringPosition.BLANK) {
+                    if (player) {
+                        if (i + 1 < 8 && board[i + 1][j] == DomineeringPosition.BLANK) {
                             break;
                         }
-                        if(j+1 < 8 && board[i][j+1] == DomineeringPosition.BLANK){
-                            ret = true;
-                            System.out.println("Player won");
-                            break;
-                        }
-                    }else{
-                        if(i+1 < 8 && board[i+1][j] == DomineeringPosition.BLANK){
-                            ret = true;
-                            System.out.println("Program won");
-                            break;
-                        }
-                        if(j+1 < 8 && board[i][j+1] == DomineeringPosition.BLANK){
-                            ret = true;
-                            System.out.println("Program won");
+                    } else {
+                        if (j + 1 < 8 && board[i][j + 1] == DomineeringPosition.BLANK) {
                             break;
                         }
                     }
@@ -117,15 +104,15 @@ public class Domineering extends GameSearch{
                             pos2.board[i+1][j] = DomineeringPosition.HUMAN;
                             return new Position[]{pos2};
                         }
-                        if(j+1 < 8 && board[i][j+1] == DomineeringPosition.BLANK){
+                        if (j + 1 < 8 && board[i][j + 1] == DomineeringPosition.BLANK) {
                             DomineeringPosition pos2 = new DomineeringPosition();
-                            for (int k=0; k<8; k++) {
-                                for(int l=0; l<8; l++){
+                            for (int k = 0; k < 8; k++) {
+                                for (int l = 0; l < 8; l++) {
                                     pos2.board[k][l] = board[k][l];
                                 }
                             }
-                            pos2.board[i][j] = DomineeringPosition.HUMAN;
-                            pos2.board[i][j+1] = DomineeringPosition.HUMAN;
+                            pos2.board[i][j] = DomineeringPosition.PROGRAM;
+                            pos2.board[i][j + 1] = DomineeringPosition.PROGRAM;
                             return new Position[]{pos2};
                         }
                     }else {
@@ -181,36 +168,27 @@ public class Domineering extends GameSearch{
         if (wonPosition(p, false)) ret = true;
         else if (wonPosition(p, true))  ret = true;
         else if (drawnPosition(p)) ret = true;
-        return false;
+        return ret;
     }
 
     @Override
     public Move createMove() {
-        DomineeringMove dm = new DomineeringMove();
+        Scanner scanner = new Scanner(System.in);
         System.out.println("Enter move like a2a3 or a2b2 depending on orientation: ");
-        String move = System.console().readLine();
-        try{
-            dm.row = move.charAt(0) - 'a';
-            dm.col = move.charAt(1) - '1';
-            dm.row2 = move.charAt(2) - 'a';
-            dm.col2 = move.charAt(3) - '1';
-        } catch (Exception e) {
-            System.out.println("Invalid move");
-            return createMove();
-        }
+        String move = scanner.nextLine();
+        DomineeringMove dm = new DomineeringMove();
+        dm.row = (char) (move.charAt(0) - 'a');
+        dm.col = Integer.parseInt(move.substring(1, 2));
+        dm.row2 = (char) (move.charAt(2) - 'a');
+        dm.col2 = Integer.parseInt(move.substring(3, 4));
         return dm;
     }
 
     public static void main(String [] args) {
         DomineeringPosition dp = new DomineeringPosition();
-        for (int i=0; i<8; i++) {
-            for(int j=0; j<8; j++){
-                dp.board[i][j] = DomineeringPosition.BLANK;
-            }
-        }
         Domineering d = new Domineering();
         d.playGame(dp, true);
-
+/*
         JFrame window=new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
@@ -218,6 +196,6 @@ public class Domineering extends GameSearch{
 
         window.pack();
         window.setLocationRelativeTo(null);
-        window.setVisible(true);
+        window.setVisible(true);*/
     }
 }
