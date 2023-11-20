@@ -174,7 +174,7 @@ public class Domineering extends GameSearch{
     @Override
     public Move createMove() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter move like a2a3 or a2b2 depending on orientation: ");
+        System.out.println("Enter move like a2a3 or a2b2 depending on orientation ou entrez 1 pour une aide: ");
         String move = scanner.nextLine();
         DomineeringMove dm = new DomineeringMove();
         dm.row = (char) (move.charAt(0) - 'a');
@@ -187,8 +187,7 @@ public class Domineering extends GameSearch{
     public static void main(String [] args) {
         DomineeringPosition dp = new DomineeringPosition();
         Domineering d = new Domineering();
-        d.playGame(dp, true);
-/*
+        /*
         JFrame window=new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
@@ -196,6 +195,8 @@ public class Domineering extends GameSearch{
 
         window.pack();
         window.setLocationRelativeTo(null);
-        window.setVisible(true);*/
+        window.setVisible(true);
+        */
+        d.playGame(dp, true);
     }
 }

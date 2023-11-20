@@ -41,59 +41,69 @@ public abstract class GameSearch {
      */
 
     protected Vector alphaBeta(int depth, Position p, boolean player) {
-        Vector v = alphaBetaHelper(depth, p, player, 1000000.0f, -1000000.0f);
+        Vector v = maxValue(depth, p, player, 1000000.0f, -1000000.0f);
         //System.out.println("^^ v(0): " + v.elementAt(0) + ", v(1): " + v.elementAt(1));
         return v;
     }
 
-    protected Vector alphaBetaHelper(int depth, Position p,
-                                     boolean player, float alpha, float beta) {
-        if (GameSearch.DEBUG) System.out.println("alphaBetaHelper("+depth+","+p+","+alpha+","+beta+")");
-        if (reachedMaxDepth(p, depth)) {
-            Vector v = new Vector(2);
-            float value = positionEvaluation(p, player);
-            v.addElement(new Float(value));
-            v.addElement(null);
-            if(GameSearch.DEBUG) {
-                System.out.println(" alphaBetaHelper: mx depth at " + depth+ ", value="+value);
-            }
+    protected Vector maxValue(int depth, Position p, boolean player, float alpha, float beta){
+        if(reachedMaxDepth(p, depth)){
+            Vector v = new Vector();
+            v.addElement(new Float(positionEvaluation(p, player)));
+            v.addElement(p);
             return v;
         }
-        Vector best = new Vector();
+        Vector v = new Vector();
+        v.addElement(new Float(-1000000.0f));
+        v.addElement(p);
         Position [] moves = possibleMoves(p, player);
         for (int i=0; i<moves.length; i++) {
-            Vector v2 = alphaBetaHelper(depth + 1, moves[i], !player, -beta, -alpha);
-            //  if (v2 == null || v2.size() < 1) continue;
-            float value = -((Float)v2.elementAt(0)).floatValue();
-            if (value > beta) {
-                if(GameSearch.DEBUG) System.out.println(" ! ! ! value="+value+", beta="+beta);
-                beta = value;
-                best = new Vector();
-                best.addElement(moves[i]);
-                Enumeration enum2 = v2.elements();
-                enum2.nextElement(); // skip previous value
-                while (enum2.hasMoreElements()) {
-                    Object o = enum2.nextElement();
-                    if (o != null) best.addElement(o);
-                }
+            Vector v2 = minValue(depth+1, moves[i], !player, alpha, beta);
+            Float eval = (Float)v.elementAt(0);
+            Float eval2 = (Float)v2.elementAt(0);
+            if (eval2.floatValue() > eval.floatValue()) {
+                v.setElementAt(eval2, 0);
+                v.setElementAt(moves[i], 1);
             }
-            /**
-             * Use the alpha-beta cutoff test to abort search if we
-             * found a move that proves that the previous move in the
-             * move chain was dubious
-             */
-            if (beta >= alpha) {
-                break;
+            if (eval2.floatValue() >= beta) {
+                return v;
+            }
+            if (eval2.floatValue() > alpha) {
+                alpha = eval2.floatValue();
             }
         }
-        Vector v3 = new Vector();
-        v3.addElement(new Float(beta));
-        Enumeration enum2 = best.elements();
-        while (enum2.hasMoreElements()) {
-            v3.addElement(enum2.nextElement());
-        }
-        return v3;
+        return v;
     }
+
+        protected Vector minValue(int depth, Position p, boolean player, float alpha, float beta){
+        if(reachedMaxDepth(p, depth)){
+            Vector v = new Vector();
+            v.addElement(new Float(positionEvaluation(p, player)));
+            v.addElement(p);
+            return v;
+        }
+        Vector v = new Vector();
+        v.addElement(new Float(1000000.0f));
+        v.addElement(p);
+        Position [] moves = possibleMoves(p, player);
+        for (int i=0; i<moves.length; i++) {
+            Vector v2 = maxValue(depth+1, moves[i], !player, alpha, beta);
+            Float eval = (Float)v.elementAt(0);
+            Float eval2 = (Float)v2.elementAt(0);
+            if (eval2.floatValue() < eval.floatValue()) {
+                v.setElementAt(eval2, 0);
+                v.setElementAt(moves[i], 1);
+            }
+            if (eval2.floatValue() <= alpha) {
+                return v;
+            }
+            if (eval2.floatValue() < beta) {
+                beta = eval2.floatValue();
+            }
+        }
+        return v;
+    }
+
     public void playGame(Position startingPosition, boolean humanPlayFirst) {
         if (humanPlayFirst == false) {
             Vector v = alphaBeta(0, startingPosition, PROGRAM);
