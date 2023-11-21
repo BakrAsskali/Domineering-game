@@ -187,16 +187,10 @@ public class Domineering extends GameSearch{
     public static void main(String [] args) {
         DomineeringPosition dp = new DomineeringPosition();
         Domineering d = new Domineering();
-        /*
-        JFrame window=new JFrame();
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setResizable(false);
-        window.add(new DemoPanel());
 
-        window.pack();
-        window.setLocationRelativeTo(null);
-        window.setVisible(true);
-        */
+        DemoPanel panel = new DemoPanel();
+        panel.pack();
+
         d.playGame(dp, true);
     }
 }
