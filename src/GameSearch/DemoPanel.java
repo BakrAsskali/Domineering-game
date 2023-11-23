@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class DemoPanel extends JFrame {
     private boolean player1Turn = true;
@@ -19,6 +20,9 @@ public class DemoPanel extends JFrame {
     final int screenHeight = nodeSize * maxRow;
     Node[][] node = new Node[maxCol][maxRow];
     Node currentNode;
+
+    ArrayList<Node> openList=new ArrayList<>();
+    ArrayList<Node> playedList=new ArrayList<>();
     int step = 0;
 
     public DemoPanel() {
@@ -65,58 +69,81 @@ public class DemoPanel extends JFrame {
 
     private void gameStart() {
         this.getContentPane().removeAll();
-        this.repaint();
-
         JPanel gamePanel = new JPanel();
-        gamePanel.setLayout(new GridLayout(maxCol, maxRow));
 
-        for (int i = 0; i < maxCol; i++) {
-            for (int j = 0; j < maxRow; j++) {
-                node[i][j] = new Node(i, j);
-                gamePanel.add(node[i][j]);
+        gamePanel.setPreferredSize(new Dimension(screenWidth,screenHeight));
+        gamePanel.setLayout(new GridLayout(maxCol,maxRow));
+        ///place nodes
+        int col=0;
+        int row=0;
+        while (col<maxCol && row<maxRow){
+            node[col][row]=new Node(col,row);
+            gamePanel.add(node[col][row]);
+            col++;
+            if(col==maxCol){
+                col=0;
+                row++;
             }
         }
-
-        // Add two buttons in the middle of the grid
-        JButton saveButton = new JButton("Save");
-        JButton quitButton = new JButton("Quit");
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 2));
-        buttonPanel.add(saveButton);
-        buttonPanel.add(quitButton);
-
-        // Add components to the main panel
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
-        mainPanel.add(gamePanel, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        this.add(mainPanel);
+        for (int i = 0; i < maxCol; i++) {
+            for (int j = 0; j < maxRow; j++) {
+                addMouseListenerToNode( node[i][j] );
+            }
+        }
+        this.add(gamePanel);
         this.setVisible(true);
         this.pack();
+    }
+    private void addMouseListenerToNode(Node currentNode) {
+        int nodeCol = currentNode.col;
+        int nodeRow = currentNode.row;
 
-        // Add your button action listeners here
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                saveGridToFile("grid.txt");
-            }
-        });
+        if(player1Turn) {
+            currentNode.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    highlightNode(currentNode);
+                    highlightNode(node[nodeCol][nodeRow - 1]);
+                }
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    unhighlightNode(currentNode);
+                    unhighlightNode(node[nodeCol][nodeRow-1]);
+                }
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    handleClick(currentNode);
+                    handleClick(node[nodeCol][nodeRow - 1]);
+                    player1Turn=!player1Turn;
+                }
+            });
+        }else {
+            currentNode.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    highlightNode(currentNode);
+                    highlightNode(node[nodeCol+1][nodeRow]);
+                }
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    if(!currentNode.checked) {
+                        unhighlightNode(currentNode);
+                        unhighlightNode(node[nodeCol + 1][nodeRow]);
+                    }else {
+                        handleClick(currentNode);
+                        handleClick(node[nodeCol+1][nodeRow]);
+                    }
+                }
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    handleClick(currentNode);
+                    handleClick(node[nodeCol+1][nodeRow]);
+                    player1Turn=!player1Turn;
+                    currentNode.checked=true;
 
-        quitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
-
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                handleNodeClick(e);
-            }
-        });
+                }
+            });
+        }
     }
 
     private void saveGridToFile(String fileName) {
@@ -132,6 +159,27 @@ public class DemoPanel extends JFrame {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void highlightNode(Node currentNode) {
+        int col = currentNode.col;
+        int row = currentNode.row;
+        // Check if the node above exists and is not checked
+
+        if(player1Turn){
+            if (row > 0 && !playedList.contains(node[col][row - 1])) {
+                currentNode.setBackground(Color.LIGHT_GRAY);
+            }
+        }else {
+            if (row > 0 && !playedList.contains(node[col+1][row ])) {
+                currentNode.setBackground(Color.LIGHT_GRAY);
+            }
+        }
+    }
+
+    private void unhighlightNode(Node currentNode) {
+
+        currentNode.setBackground(Color.WHITE);
     }
 
     private void handleNodeClick(MouseEvent e) {
@@ -157,5 +205,20 @@ public class DemoPanel extends JFrame {
                 System.out.println("step: " + step);
             }
         }
+    }
+
+    private void handleClick(Node clickedNode) {
+        int col = clickedNode.col;
+        int row = clickedNode.row;
+
+        if (player1Turn) {
+            // Set color for player 1 and the node above
+            clickedNode.setAsCheckedPlayer1();
+        } else {
+            // Set color for player 2 and the node to the right
+            clickedNode.setAsCheckedPlayer2();
+        }
+
+        // Switch player turn
     }
 }
