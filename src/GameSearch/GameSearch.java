@@ -105,7 +105,7 @@ public abstract class GameSearch {
     }
 
     public void playGame(Position startingPosition, boolean humanPlayFirst) {
-        if (humanPlayFirst == false) {
+        if (!humanPlayFirst) {
             Vector v = alphaBeta(0, startingPosition, PROGRAM);
             startingPosition = (Position)v.elementAt(1);
         }
@@ -127,9 +127,9 @@ public abstract class GameSearch {
             System.out.print("\nYour move:");
             Move move = createMove();
             startingPosition = makeMove(startingPosition, HUMAN, move);
-            
+
             printPosition(startingPosition);
-            
+
              if (wonPosition(startingPosition, HUMAN)) {
                 System.out.println("Human won");
                 break;
@@ -149,4 +149,6 @@ public abstract class GameSearch {
            }
         }
     }
+
+    public abstract Move createMove(char row, int col, char row2, int col2);
 }

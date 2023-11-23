@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class DemoPanel extends JFrame {
+
     private boolean player1Turn = true;
     final int maxCol = 8;
     final int maxRow = 8;
@@ -85,6 +86,7 @@ public class DemoPanel extends JFrame {
                 row++;
             }
         }
+        
         for (int i = 0; i < maxCol; i++) {
             for (int j = 0; j < maxRow; j++) {
                 addMouseListenerToNode( node[i][j] );

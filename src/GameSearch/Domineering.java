@@ -1,7 +1,8 @@
 package GameSearch;
 
 import javax.swing.*;
-import java.util.Scanner;
+import java.util.Enumeration;
+import java.util.Vector;
 
 public class Domineering extends GameSearch{
     @Override
@@ -135,7 +136,7 @@ public class Domineering extends GameSearch{
                                 }
                             }
                             pos2.board[i][j] = DomineeringPosition.PROGRAM;
-                            pos2.board[i][j] = DomineeringPosition.PROGRAM;
+                            pos2.board[i][j+1] = DomineeringPosition.PROGRAM;
                             return new Position[]{pos2};
                         }
                     }
@@ -153,7 +154,7 @@ public class Domineering extends GameSearch{
             board[m.row][m.col] = DomineeringPosition.HUMAN;
             board[m.row2][m.col2] = DomineeringPosition.HUMAN;
         }else{
-            board[m.row][m.col] = DomineeringPosition.PROGRAM;
+            board[m.row ][m.col] = DomineeringPosition.PROGRAM;
             board[m.row2][m.col2] = DomineeringPosition.PROGRAM;
         }
         return pos;
@@ -173,24 +174,76 @@ public class Domineering extends GameSearch{
 
     @Override
     public Move createMove() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter move like a2a3 or a2b2 depending on orientation ou entrez 1 pour une aide: ");
-        String move = scanner.nextLine();
+        return null;
+    }
+
+    @Override
+    public Move createMove(char row, int col, char row2, int col2) {
         DomineeringMove dm = new DomineeringMove();
-        dm.row = (char) (move.charAt(0) - 'a');
-        dm.col = Integer.parseInt(move.substring(1, 2));
-        dm.row2 = (char) (move.charAt(2) - 'a');
-        dm.col2 = Integer.parseInt(move.substring(3, 4));
+        dm.row = row;
+        dm.col = col;
+        dm.row2 = row2;
+        dm.col2 = col2;
         return dm;
+    }
+
+    @Override
+    public void playGame(Position startingPosition, boolean humanPlayFirst){
+        if (!humanPlayFirst) {
+            Vector v = alphaBeta(0, startingPosition, PROGRAM);
+            startingPosition = (Position)v.elementAt(1);
+        }
+        DemoPanel dp = new DemoPanel();
+        dp.pack();
+        dp.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                System.exit(0);
+                System.out.println("Closed");
+            }
+        });
+        while (true) {
+
+            printPosition(startingPosition);
+            if (wonPosition(startingPosition, PROGRAM)) {
+                System.out.println("Program won");
+                break;
+            }
+            if (wonPosition(startingPosition, HUMAN)) {
+                System.out.println("Human won");
+                break;
+            }
+            if (drawnPosition(startingPosition)) {
+                System.out.println("Drawn game");
+                break;
+            }
+            String[] userInput = JOptionPane.showInputDialog("Enter your move").split("");
+            Move move = createMove((char) (userInput[0].charAt(0)-'a'), Integer.parseInt(userInput[1]),(char) (userInput[2].charAt(0)-'a'), Integer.parseInt(userInput[3]));
+            startingPosition = makeMove(startingPosition, HUMAN, move);
+            printPosition(startingPosition);
+
+            if (wonPosition(startingPosition, HUMAN)) {
+                System.out.println("Human won");
+                break;
+            }
+
+            Vector v = alphaBeta(0, startingPosition, PROGRAM);
+
+            Enumeration enum2 = v.elements();
+            while (enum2.hasMoreElements()) {
+                System.out.println(" next element: " + enum2.nextElement());
+            }
+
+            startingPosition = (Position)v.elementAt(1);
+            if(startingPosition ==null){
+                System.out.println("Drawn game");
+                break;
+            }
+        }
     }
 
     public static void main(String [] args) {
         DomineeringPosition dp = new DomineeringPosition();
         Domineering d = new Domineering();
-
-        DemoPanel panel = new DemoPanel();
-        panel.pack();
-
         d.playGame(dp, true);
     }
 }
