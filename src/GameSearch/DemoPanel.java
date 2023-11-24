@@ -100,20 +100,17 @@ public class DemoPanel extends JFrame {
             currentNode.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    if (nodeCol + 1 < maxCol && !node[nodeCol + 1][nodeRow].checked) {
+                    if (nodeCol + 1 < maxCol && !node[nodeCol + 1][nodeRow].checked && !node[nodeCol][nodeRow].checked) {
                         highlightNode(currentNode);
-                        highlightNode(node[nodeCol + 1][nodeRow]);
                     }
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
                     unhighlightNode(currentNode);
-                    unhighlightNode(node[nodeCol+1][nodeRow]);
                 }
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     handleClick(currentNode);
-                    handleClick(node[nodeCol+1][nodeRow]);
                     player1Turn=!player1Turn;
                 }
             });
@@ -165,12 +162,14 @@ public class DemoPanel extends JFrame {
         int col = currentNode.col;
         int row = currentNode.row;
         if(player1Turn){
-            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col + 1][row].checked) {
-                node[col + 1][row].setBackground(Color.ORANGE);
+            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked) {
+                node[row][col].setBackground(Color.ORANGE);
+                node[row][col+1].setBackground(Color.ORANGE);
             }
         }else{
-            if (row + 1 < maxRow && !node[col][row + 1].checked && !node[col][row + 1].checked) {
-                node[col][row + 1].setBackground(Color.ORANGE);
+            if (row + 1 < maxRow && !node[col][row + 1].checked && !node[col][row].checked) {
+                node[row][col].setBackground(Color.ORANGE);
+                node[row+1][col].setBackground(Color.ORANGE);
             }
         }
     }
@@ -179,29 +178,32 @@ public class DemoPanel extends JFrame {
         int col = currentNode.col;
         int row = currentNode.row;
         if(player1Turn){
-            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col + 1][row].checked) {
+            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked) {
+                node[col][row].setBackground(Color.WHITE);
                 node[col + 1][row].setBackground(Color.WHITE);
             }
         }else{
-            if (row + 1 < maxRow && !node[col][row + 1].checked && !node[col][row + 1].checked) {
+            if (row + 1 < maxRow && !node[col][row + 1].checked && !node[col][row].checked) {
+                node[col][row].setBackground(Color.WHITE);
                 node[col][row + 1].setBackground(Color.WHITE);
             }
         }
     }
 
     private void handleClick(Node clickedNode) {
-        int col = clickedNode.col;
-        int row = clickedNode.row;
+        int col = clickedNode.row;
+        int row = clickedNode.col;
 
         if (player1Turn) {
             // Set color for player 1 and the node above
             clickedNode.setAsCheckedPlayer1();
-            move = new DomineeringMove((char) (row + 1 + 'a'), col, (char) (row + 1 + 'a'), col + 1);
+            move = new DomineeringMove((char) (row + 'a'), col, (char) (row + 'a'), col + 1);
         } else {
             // Set color for player 2 and the node to the right
             clickedNode.setAsCheckedPlayer2();
             move = new DomineeringMove((char) (row + 'a'), col, (char) (row + 1 + 'a'), col);
         }
+        System.out.println(move.toString());
         clicked = true;
     }
 
@@ -210,11 +212,13 @@ public class DemoPanel extends JFrame {
         int [][] board = dp.board;
         for (int i=0; i<8; i++) {
             for(int j=0; j<8; j++){
-                if(board[i][j] == DomineeringPosition.PROGRAM){
-                    node[i][j].setAsCheckedPlayer2();
-                }else if(board[i][j] == DomineeringPosition.HUMAN){
+                if(board[i][j]==DomineeringPosition.HUMAN){
                     node[i][j].setAsCheckedPlayer1();
-                }else{
+                }
+                if(board[i][j]==DomineeringPosition.PROGRAM){
+                    node[i][j].setAsCheckedPlayer2();
+                }
+                if (board[i][j]==DomineeringPosition.BLANK){
                     node[i][j].setBackground(Color.WHITE);
                 }
             }
