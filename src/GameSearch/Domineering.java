@@ -227,6 +227,7 @@ public class Domineering extends GameSearch{
             dp.clicked = false;
             Move move = dp.move;
             startingPosition = makeMove(startingPosition, HUMAN, move);
+            dp.updatePosition(startingPosition);
             printPosition(startingPosition);
 
             if (wonPosition(startingPosition, HUMAN)) {

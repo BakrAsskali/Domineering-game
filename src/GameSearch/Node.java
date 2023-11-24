@@ -4,12 +4,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 public class Node extends JButton implements ActionListener {
-    private boolean player1Turn = true; //  player 1 starts
     Node upper;
     int col;
     int row;
 
-    boolean start;
     boolean checked;
     public Node(int col,int row){
         this.col=col;

@@ -75,13 +75,10 @@ public class DemoPanel extends JFrame {
         ///place nodes
         int col=0;
         int row=0;
-        while (col<maxCol && row<maxRow){
-            node[col][row]=new Node(col,row);
-            gamePanel.add(node[col][row]);
-            col++;
-            if(col==maxCol){
-                col=0;
-                row++;
+        for (int i = 0; i < maxCol; i++) {
+            for (int j = 0; j < maxRow; j++) {
+                node[i][j] = new Node(i,j);
+                gamePanel.add(node[i][j]);
             }
         }
         
@@ -167,22 +164,29 @@ public class DemoPanel extends JFrame {
     private void highlightNode(Node currentNode) {
         int col = currentNode.col;
         int row = currentNode.row;
-        // Check if the node to the right exists or not
-
         if(player1Turn){
-            if (col + 1 < maxCol && !node[col + 1][row].checked) {
+            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col + 1][row].checked) {
                 node[col + 1][row].setBackground(Color.ORANGE);
             }
         }else{
-            if (row + 1 < maxRow && !node[col][row + 1].checked) {
+            if (row + 1 < maxRow && !node[col][row + 1].checked && !node[col][row + 1].checked) {
                 node[col][row + 1].setBackground(Color.ORANGE);
             }
         }
     }
 
     private void unhighlightNode(Node currentNode) {
-
-        currentNode.setBackground(Color.WHITE);
+        int col = currentNode.col;
+        int row = currentNode.row;
+        if(player1Turn){
+            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col + 1][row].checked) {
+                node[col + 1][row].setBackground(Color.WHITE);
+            }
+        }else{
+            if (row + 1 < maxRow && !node[col][row + 1].checked && !node[col][row + 1].checked) {
+                node[col][row + 1].setBackground(Color.WHITE);
+            }
+        }
     }
 
     private void handleClick(Node clickedNode) {
@@ -192,13 +196,28 @@ public class DemoPanel extends JFrame {
         if (player1Turn) {
             // Set color for player 1 and the node above
             clickedNode.setAsCheckedPlayer1();
-            move = new DomineeringMove((char) (row + 'a'), col, (char) (row + 'a'), col + 1);
-            clicked = true;
+            move = new DomineeringMove((char) (row + 1 + 'a'), col, (char) (row + 1 + 'a'), col + 1);
         } else {
             // Set color for player 2 and the node to the right
             clickedNode.setAsCheckedPlayer2();
+            move = new DomineeringMove((char) (row + 'a'), col, (char) (row + 1 + 'a'), col);
         }
+        clicked = true;
+    }
 
-        // Switch player turn
+    public void updatePosition(Position p){
+        DomineeringPosition dp = (DomineeringPosition) p;
+        int [][] board = dp.board;
+        for (int i=0; i<8; i++) {
+            for(int j=0; j<8; j++){
+                if(board[i][j] == DomineeringPosition.PROGRAM){
+                    node[i][j].setAsCheckedPlayer2();
+                }else if(board[i][j] == DomineeringPosition.HUMAN){
+                    node[i][j].setAsCheckedPlayer1();
+                }else{
+                    node[i][j].setBackground(Color.WHITE);
+                }
+            }
+        }
     }
 }
