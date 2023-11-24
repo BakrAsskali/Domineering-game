@@ -1,6 +1,5 @@
 package GameSearch;
 
-import javax.swing.*;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -151,11 +150,11 @@ public class Domineering extends GameSearch{
         DomineeringPosition pos = (DomineeringPosition)p;
         int [][] board = pos.board;
         if(player){
-            board[m.row][m.col] = DomineeringPosition.HUMAN;
-            board[m.row2][m.col2] = DomineeringPosition.HUMAN;
+            board[m.row-'a'][m.col-1] = DomineeringPosition.HUMAN;
+            board[m.row2-'a'][m.col2-1] = DomineeringPosition.HUMAN;
         }else{
-            board[m.row ][m.col] = DomineeringPosition.PROGRAM;
-            board[m.row2][m.col2] = DomineeringPosition.PROGRAM;
+            board[m.row-'a'][m.col-1] = DomineeringPosition.PROGRAM;
+            board[m.row2-'a'][m.col2-1] = DomineeringPosition.PROGRAM;
         }
         return pos;
     }
@@ -195,12 +194,14 @@ public class Domineering extends GameSearch{
         }
         DemoPanel dp = new DemoPanel();
         dp.pack();
-        dp.addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent e) {
-                System.exit(0);
-                System.out.println("Closed");
+
+        while(!dp.gameStart){
+            try {
+                Thread.sleep(100); // Adjust the sleep time as needed
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        });
+        }
         while (true) {
 
             printPosition(startingPosition);
@@ -216,8 +217,15 @@ public class Domineering extends GameSearch{
                 System.out.println("Drawn game");
                 break;
             }
-            String[] userInput = JOptionPane.showInputDialog("Enter your move").split("");
-            Move move = createMove((char) (userInput[0].charAt(0)-'a'), Integer.parseInt(userInput[1]),(char) (userInput[2].charAt(0)-'a'), Integer.parseInt(userInput[3]));
+            while(!dp.clicked){
+                try {
+                    Thread.sleep(100); // Adjust the sleep time as needed
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            dp.clicked = false;
+            Move move = dp.move;
             startingPosition = makeMove(startingPosition, HUMAN, move);
             printPosition(startingPosition);
 
