@@ -20,7 +20,10 @@ public class DemoPanel extends JFrame {
     final int nodeSize = 80;
     final int screenWidth = nodeSize * maxCol;
     final int screenHeight = nodeSize * maxRow;
+
     Node[][] node = new Node[maxCol][maxRow];
+    private JComboBox<String> levelComboBox;
+    private JComboBox<String> playerComboBox;
 
     public DemoPanel() {
         initializeUI();
@@ -31,14 +34,36 @@ public class DemoPanel extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout()); // Use FlowLayout for left-to-right flow
         JButton startButton = new JButton("Start");
         JButton continueButton = new JButton("Continue");
         JButton quitButton = new JButton("Quit");
 
+
+        // Create and populate the level combo box
+        levelComboBox = new JComboBox<>(new String[]{"1", "2", "3"});
+        levelComboBox.setSelectedIndex(1); // Set the default selected level
+        int level=levelComboBox.getSelectedIndex()+1;
+
+        // Create and populate the player combo box
+        playerComboBox = new JComboBox<>(new String[]{"P1 vs P2", "P1 vs Computer"});
+        playerComboBox.setSelectedIndex(1); // Set the default selected player option
+        boolean player = playerComboBox.getSelectedIndex() == 0 ? false : true;
+
+        // Add components to the button panel
+        buttonPanel.add(startButton);
+        buttonPanel.add(continueButton);
+        buttonPanel.add(quitButton);
+
+        // Add combo boxes to the button panel
+        buttonPanel.add(new JLabel("Select Level:"));
+        buttonPanel.add(new JLabel("Select Players:"));
+
+
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                gameStart();
+                gameStart(level, player);
             }
         });
 
@@ -59,12 +84,15 @@ public class DemoPanel extends JFrame {
         buttonPanel.add(startButton);
         buttonPanel.add(continueButton);
         buttonPanel.add(quitButton);
+        buttonPanel.add(levelComboBox);
+        buttonPanel.add(playerComboBox);
+
 
         this.add(buttonPanel);
         this.setVisible(true);
     }
 
-    private void gameStart() {
+    private void gameStart(int level,boolean player) {
         this.getContentPane().removeAll();
         JPanel gamePanel = new JPanel();
 
@@ -94,17 +122,20 @@ public class DemoPanel extends JFrame {
             currentNode.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    if (nodeCol + 1 < maxCol && !node[nodeCol + 1][nodeRow].checked && !node[nodeCol][nodeRow].checked) {
+                    if (nodeCol + 1 < maxCol && nodeRow+1< maxRow && !node[nodeCol + 1][nodeRow].checked && !node[nodeCol][nodeRow].checked) {
                         highlightNode(currentNode);
                     }
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    unhighlightNode(currentNode);
+                    if (nodeCol + 1 < maxCol && nodeRow+1< maxRow && !node[nodeCol + 1][nodeRow].checked && !node[nodeCol][nodeRow].checked) {
+                        unhighlightNode(currentNode);
+                    }
                 }
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    handleClick(currentNode);
+                        handleClick(currentNode);
+
                 }
             });
 

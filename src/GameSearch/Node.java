@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 public class Node extends JButton implements ActionListener {
-    Node upper;
     int col;
     int row;
 

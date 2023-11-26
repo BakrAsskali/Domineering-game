@@ -4,6 +4,8 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 public class Domineering extends GameSearch{
+
+
     @Override
     public boolean drawnPosition(Position p) {
         Boolean ret = true;
@@ -96,9 +98,7 @@ public class Domineering extends GameSearch{
                         if(i+1 < 8 && board[i+1][j] == DomineeringPosition.BLANK){
                             DomineeringPosition pos2 = new DomineeringPosition();
                             for (int k=0; k<8; k++) {
-                                for(int l=0; l<8; l++){
-                                    pos2.board[k][l] = board[k][l];
-                                }
+                                System.arraycopy(board[k], 0, pos2.board[k], 0, 8);
                             }
                             pos2.board[i][j] = DomineeringPosition.HUMAN;
                             pos2.board[i+1][j] = DomineeringPosition.HUMAN;
@@ -107,9 +107,7 @@ public class Domineering extends GameSearch{
                         if (j + 1 < 8 && board[i][j + 1] == DomineeringPosition.BLANK) {
                             DomineeringPosition pos2 = new DomineeringPosition();
                             for (int k = 0; k < 8; k++) {
-                                for (int l = 0; l < 8; l++) {
-                                    pos2.board[k][l] = board[k][l];
-                                }
+                                System.arraycopy(board[k], 0, pos2.board[k], 0, 8);
                             }
                             pos2.board[i][j] = DomineeringPosition.PROGRAM;
                             pos2.board[i][j + 1] = DomineeringPosition.PROGRAM;
@@ -119,9 +117,7 @@ public class Domineering extends GameSearch{
                         if (i + 1 < 8 && board[i + 1][j] == DomineeringPosition.BLANK) {
                             DomineeringPosition pos2 = new DomineeringPosition();
                             for (int k = 0; k < 8; k++) {
-                                for (int l = 0; l < 8; l++) {
-                                    pos2.board[k][l] = board[k][l];
-                                }
+                                System.arraycopy(board[k], 0, pos2.board[k], 0, 8);
                             }
                             pos2.board[i][j] = DomineeringPosition.PROGRAM;
                             pos2.board[i + 1][j] = DomineeringPosition.PROGRAM;
@@ -130,9 +126,7 @@ public class Domineering extends GameSearch{
                         if (j + 1 < 8 && board[i][j + 1] == DomineeringPosition.BLANK) {
                             DomineeringPosition pos2 = new DomineeringPosition();
                             for (int k = 0; k < 8; k++) {
-                                for (int l = 0; l < 8; l++) {
-                                    pos2.board[k][l] = board[k][l];
-                                }
+                                System.arraycopy(board[k], 0, pos2.board[k], 0, 8);
                             }
                             pos2.board[i][j] = DomineeringPosition.PROGRAM;
                             pos2.board[i][j+1] = DomineeringPosition.PROGRAM;
@@ -163,7 +157,6 @@ public class Domineering extends GameSearch{
     public boolean reachedMaxDepth(Position p, int depth) {
         boolean ret = false;
         DomineeringPosition dp = (DomineeringPosition) p;
-        int [][] board = dp.board;
         if (depth >= 10) return true;
         if (wonPosition(p, false)) ret = true;
         else if (wonPosition(p, true))  ret = true;

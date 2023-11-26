@@ -75,7 +75,7 @@ public abstract class GameSearch {
         return v;
     }
 
-        protected Vector minValue(int depth, Position p, boolean player, float alpha, float beta){
+    protected Vector minValue(int depth, Position p, boolean player, float alpha, float beta){
         if(reachedMaxDepth(p, depth)){
             Vector v = new Vector();
             v.addElement(new Float(positionEvaluation(p, player)));
