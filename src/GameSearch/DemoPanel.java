@@ -9,14 +9,12 @@ import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class DemoPanel extends JFrame {
     public Move move;
     public boolean clicked = false;
 
     public boolean gameStart = false;
-    private boolean player1Turn = true;
     final int maxCol = 8;
     final int maxRow = 8;
     final int nodeSize = 80;
@@ -72,9 +70,6 @@ public class DemoPanel extends JFrame {
 
         gamePanel.setPreferredSize(new Dimension(screenWidth,screenHeight));
         gamePanel.setLayout(new GridLayout(maxCol,maxRow));
-        ///place nodes
-        int col=0;
-        int row=0;
         for (int i = 0; i < maxCol; i++) {
             for (int j = 0; j < maxRow; j++) {
                 node[i][j] = new Node(i,j);
@@ -96,7 +91,6 @@ public class DemoPanel extends JFrame {
         int nodeCol = currentNode.col;
         int nodeRow = currentNode.row;
 
-        if(player1Turn) {
             currentNode.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
@@ -111,36 +105,9 @@ public class DemoPanel extends JFrame {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     handleClick(currentNode);
-                    player1Turn=!player1Turn;
                 }
             });
-        }else {
-            currentNode.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    highlightNode(currentNode);
-                    highlightNode(node[nodeCol+1][nodeRow]);
-                }
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    if(!currentNode.checked) {
-                        unhighlightNode(currentNode);
-                        unhighlightNode(node[nodeCol + 1][nodeRow]);
-                    }else {
-                        handleClick(currentNode);
-                        handleClick(node[nodeCol+1][nodeRow]);
-                    }
-                }
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    handleClick(currentNode);
-                    handleClick(node[nodeCol+1][nodeRow]);
-                    player1Turn=!player1Turn;
-                    currentNode.checked=true;
 
-                }
-            });
-        }
     }
 
     private void saveGridToFile(String fileName) {
@@ -148,7 +115,7 @@ public class DemoPanel extends JFrame {
             for (int i = 0; i < maxCol; i++) {
                 for (int j = 0; j < maxRow; j++) {
                     Node currentNode = node[i][j];
-                    writer.write(currentNode.toString(i, j, player1Turn));
+                    String nodeString = currentNode.toString(i, j);
                     writer.newLine();
                 }
             }
@@ -159,51 +126,32 @@ public class DemoPanel extends JFrame {
     }
 
     private void highlightNode(Node currentNode) {
-        int col = currentNode.col;
-        int row = currentNode.row;
-        if(player1Turn){
+        int col = currentNode.row;
+        int row = currentNode.col;
             if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked) {
                 node[row][col].setBackground(Color.ORANGE);
                 node[row][col+1].setBackground(Color.ORANGE);
             }
-        }else{
-            if (row + 1 < maxRow && !node[col][row + 1].checked && !node[col][row].checked) {
-                node[row][col].setBackground(Color.ORANGE);
-                node[row+1][col].setBackground(Color.ORANGE);
-            }
-        }
     }
 
     private void unhighlightNode(Node currentNode) {
         int col = currentNode.col;
         int row = currentNode.row;
-        if(player1Turn){
             if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked) {
                 node[col][row].setBackground(Color.WHITE);
-                node[col + 1][row].setBackground(Color.WHITE);
+                node[col][row+1].setBackground(Color.WHITE);
             }
-        }else{
-            if (row + 1 < maxRow && !node[col][row + 1].checked && !node[col][row].checked) {
-                node[col][row].setBackground(Color.WHITE);
-                node[col][row + 1].setBackground(Color.WHITE);
-            }
-        }
+
     }
 
     private void handleClick(Node clickedNode) {
         int col = clickedNode.row;
         int row = clickedNode.col;
 
-        if (player1Turn) {
             // Set color for player 1 and the node above
             clickedNode.setAsCheckedPlayer1();
             move = new DomineeringMove((char) (row + 'a'), col, (char) (row + 'a'), col + 1);
-        } else {
-            // Set color for player 2 and the node to the right
-            clickedNode.setAsCheckedPlayer2();
-            move = new DomineeringMove((char) (row + 'a'), col, (char) (row + 1 + 'a'), col);
-        }
-        System.out.println(move.toString());
+
         clicked = true;
     }
 

@@ -150,11 +150,11 @@ public class Domineering extends GameSearch{
         DomineeringPosition pos = (DomineeringPosition)p;
         int [][] board = pos.board;
         if(player){
-            board[m.row-'a'][m.col-1] = DomineeringPosition.HUMAN;
-            board[m.row2-'a'][m.col2-1] = DomineeringPosition.HUMAN;
+            board[m.row-'a'][m.col] = DomineeringPosition.HUMAN;
+            board[m.row2-'a'][m.col2] = DomineeringPosition.HUMAN;
         }else{
-            board[m.row-'a'][m.col-1] = DomineeringPosition.PROGRAM;
-            board[m.row2-'a'][m.col2-1] = DomineeringPosition.PROGRAM;
+            board[m.row-'a'][m.col] = DomineeringPosition.PROGRAM;
+            board[m.row2-'a'][m.col2] = DomineeringPosition.PROGRAM;
         }
         return pos;
     }
@@ -188,12 +188,13 @@ public class Domineering extends GameSearch{
 
     @Override
     public void playGame(Position startingPosition, boolean humanPlayFirst){
+        DemoPanel dp = new DemoPanel();
+        dp.pack();
         if (!humanPlayFirst) {
             Vector v = alphaBeta(0, startingPosition, PROGRAM);
             startingPosition = (Position)v.elementAt(1);
         }
-        DemoPanel dp = new DemoPanel();
-        dp.pack();
+
 
         while(!dp.gameStart){
             try {
@@ -217,6 +218,8 @@ public class Domineering extends GameSearch{
                 System.out.println("Drawn game");
                 break;
             }
+
+            dp.updatePosition(startingPosition);
             while(!dp.clicked){
                 try {
                     Thread.sleep(100); // Adjust the sleep time as needed

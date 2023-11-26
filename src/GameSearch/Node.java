@@ -31,16 +31,10 @@ public class Node extends JButton implements ActionListener {
         checked=true;
     }
 
-    public String toString(int col,int row, boolean player1Turn){
+    public String toString(int col,int row){
         String s="";
         s=s+col;
         s=s+row;
-        if(player1Turn){
-            s=s+"O";
-        }
-        else{
-            s=s+"X";
-        }
         return s;
     }
 }
