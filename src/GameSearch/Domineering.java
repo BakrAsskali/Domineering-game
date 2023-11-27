@@ -120,6 +120,7 @@ public class Domineering extends GameSearch{
         DomineeringPosition dp = (DomineeringPosition) p;
         int [][] board = dp.board;
         ArrayList<Position> ret = new ArrayList<>();
+        Position[] ret2 ;
         for (int i=0; i<8; i++) {
             for(int j=0; j<8; j++){
                 if(board[i][j] == DomineeringPosition.BLANK){
@@ -145,7 +146,9 @@ public class Domineering extends GameSearch{
                 }
             }
 
-        return null;
+        ret2 = new Position[ret.size()];
+        ret.toArray(ret2);
+        return ret2;
     }
 
     public Position makeMove(Position p, boolean player, Move move) {
