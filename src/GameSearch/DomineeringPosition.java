@@ -5,8 +5,29 @@ public class DomineeringPosition extends Position{
     final static public int HUMAN = 1;
     final static public int PROGRAM = -1;
 
-    int [][] board = new int[8][8];
+    int col=8;
+    int row=8;
 
+
+    int [][] board = new int[col][row];
+
+    DomineeringPosition(int col, int row){
+        this.col= col;
+        this.row = row;
+
+        for (int i=0; i<col; i++) {
+            for(int j=0; j<row; j++){
+                board[i][j] = BLANK;
+            }
+        }
+    }
+    DomineeringPosition(){
+        for (int i=0; i<col; i++) {
+            for(int j=0; j<row; j++){
+                board[i][j] = BLANK;
+            }
+        }
+    }
     public String toString() {
         StringBuffer sb = new StringBuffer("[");
         for (int i=0; i<8; i++) {
@@ -17,4 +38,5 @@ public class DomineeringPosition extends Position{
         sb.append("]");
         return sb.toString();
     }
+
 }

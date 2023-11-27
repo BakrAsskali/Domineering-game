@@ -1,5 +1,6 @@
 package GameSearch;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -14,8 +15,7 @@ public class Domineering extends GameSearch{
         for (int i=0; i<8; i++) {
             for(int j=0; j<8; j++){
                 if(board[i][j] == DomineeringPosition.BLANK){
-                    ret = false;
-                    break;
+                    return false;
                 }
             }
         }
@@ -48,27 +48,55 @@ public class Domineering extends GameSearch{
     @Override
     public float positionEvaluation(Position p, boolean player) {
         DomineeringPosition dp = (DomineeringPosition) p;
-        int [][] board = dp.board;
-        int count = 0;
+        int[][] board = dp.board;
+        float base = 1.0f;
+        int countPlayer1 = 0;
+        int countPlayer2=0;
+        float result;
+
+
+        countPlayer1=numberOfHorizontalPos(board);
+        countPlayer2=numberOfVerticalPos(board);
+
+        result=countPlayer2-countPlayer1;
+        if(player){
+            return result;
+        }else {
+            return -result;
+        }
+    }
+
+
+
+    public int numberOfVerticalPos(int[][] board){
+        int ret = 0;
         for (int i=0; i<8; i++) {
             for(int j=0; j<8; j++){
-                if(board[i][j] == DomineeringPosition.BLANK){
-                    count++;
+                if(board[i][j] == DomineeringPosition.BLANK) {
+                    if (i + 1 < 8 && board[i + 1][j] == DomineeringPosition.BLANK) {
+                        ret++;
+                    }
                 }
             }
         }
-        count = 64 - count;
-        // prefer to block other player
-        float base = 1.0f;
-        if (wonPosition(p, !player))  {
-            return base + (1.0f / count);
+        return ret;
+    }
+    public int numberOfHorizontalPos(int[][] board){
+        int ret = 0;
+        for (int i=0; i<8; i++) {
+            for(int j=0; j<8; j++){
+                if(board[i][j] == DomineeringPosition.BLANK) {
+                    if (j + 1 < 8 && board[i][j+1] == DomineeringPosition.BLANK) {
+                        ret++;
+                    }
+                }
+            }
         }
-        if (wonPosition(p, player))  {
-            return -(base + (1.0f / count));
-        }
-        return count;
+        return ret;
     }
 
+
+    //useless
     @Override
     public void printPosition(Position p) {
         DomineeringPosition dp = (DomineeringPosition) p;
@@ -91,51 +119,32 @@ public class Domineering extends GameSearch{
     public Position[] possibleMoves(Position p, boolean player) {
         DomineeringPosition dp = (DomineeringPosition) p;
         int [][] board = dp.board;
+        ArrayList<Position> ret = new ArrayList<>();
         for (int i=0; i<8; i++) {
             for(int j=0; j<8; j++){
                 if(board[i][j] == DomineeringPosition.BLANK){
-                    if(player){
-                        if(i+1 < 8 && board[i+1][j] == DomineeringPosition.BLANK){
-                            DomineeringPosition pos2 = new DomineeringPosition();
-                            for (int k=0; k<8; k++) {
-                                System.arraycopy(board[k], 0, pos2.board[k], 0, 8);
+                    if(player) {
+                            if (i + 1 < 8 && board[i + 1][j] == DomineeringPosition.BLANK) {
+                                DomineeringPosition pos2 = new DomineeringPosition();
+                                for(int k = 0; k < 8; k++) System.arraycopy(board[k], 0, pos2.board[k], 0, 8);
+                                pos2.board[i][j] = DomineeringPosition.HUMAN;
+                                pos2.board[i + 1][j] = DomineeringPosition.HUMAN;
+                                ret.add(pos2);
                             }
-                            pos2.board[i][j] = DomineeringPosition.HUMAN;
-                            pos2.board[i+1][j] = DomineeringPosition.HUMAN;
-                            return new Position[]{pos2};
-                        }
-                        if (j + 1 < 8 && board[i][j + 1] == DomineeringPosition.BLANK) {
+                        }else {
+                        if (j + 1 < 8 && board[i][j+1] == DomineeringPosition.BLANK) {
                             DomineeringPosition pos2 = new DomineeringPosition();
-                            for (int k = 0; k < 8; k++) {
-                                System.arraycopy(board[k], 0, pos2.board[k], 0, 8);
-                            }
-                            pos2.board[i][j] = DomineeringPosition.PROGRAM;
-                            pos2.board[i][j + 1] = DomineeringPosition.PROGRAM;
-                            return new Position[]{pos2};
-                        }
-                    }else {
-                        if (i + 1 < 8 && board[i + 1][j] == DomineeringPosition.BLANK) {
-                            DomineeringPosition pos2 = new DomineeringPosition();
-                            for (int k = 0; k < 8; k++) {
-                                System.arraycopy(board[k], 0, pos2.board[k], 0, 8);
-                            }
-                            pos2.board[i][j] = DomineeringPosition.PROGRAM;
-                            pos2.board[i + 1][j] = DomineeringPosition.PROGRAM;
-                            return new Position[]{pos2};
-                        }
-                        if (j + 1 < 8 && board[i][j + 1] == DomineeringPosition.BLANK) {
-                            DomineeringPosition pos2 = new DomineeringPosition();
-                            for (int k = 0; k < 8; k++) {
-                                System.arraycopy(board[k], 0, pos2.board[k], 0, 8);
-                            }
+                            for(int k = 0; k < 8; k++) for(int l = 0; l < 8; l++) pos2.board[k][l] = board[k][l];
                             pos2.board[i][j] = DomineeringPosition.PROGRAM;
                             pos2.board[i][j+1] = DomineeringPosition.PROGRAM;
-                            return new Position[]{pos2};
+                            ret.add(pos2);
+
                         }
+                    }
                     }
                 }
             }
-        }
+
         return null;
     }
 
