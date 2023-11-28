@@ -58,22 +58,19 @@ public class Domineering extends GameSearch{
         countPlayer1=numberOfHorizontalPos(board);
         countPlayer2=numberOfVerticalPos(board);
 
-        result=countPlayer2-countPlayer1;
+        result=countPlayer1-countPlayer2;
         if(player){
             return result;
         }else {
             return -result;
         }
     }
-
-
-
     public int numberOfVerticalPos(int[][] board){
         int ret = 0;
         for (int i=0; i<8; i++) {
-            for(int j=0; j<8; j++){
-                if(board[i][j] == DomineeringPosition.BLANK) {
-                    if (i + 1 < 8 && board[i + 1][j] == DomineeringPosition.BLANK) {
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] == DomineeringPosition.BLANK) {
+                    if (i + 1 < 8 && board[i+1][j] == DomineeringPosition.BLANK) {
                         ret++;
                     }
                 }
@@ -86,7 +83,7 @@ public class Domineering extends GameSearch{
         for (int i=0; i<8; i++) {
             for(int j=0; j<8; j++){
                 if(board[i][j] == DomineeringPosition.BLANK) {
-                    if (j + 1 < 8 && board[i][j+1] == DomineeringPosition.BLANK) {
+                    if (j+1 < 8 && board[i][j+1] == DomineeringPosition.BLANK) {
                         ret++;
                     }
                 }
@@ -94,7 +91,6 @@ public class Domineering extends GameSearch{
         }
         return ret;
     }
-
 
     //useless
     @Override
@@ -155,12 +151,14 @@ public class Domineering extends GameSearch{
         DomineeringMove m = (DomineeringMove)move;
         DomineeringPosition pos = (DomineeringPosition)p;
         int [][] board = pos.board;
+
+
         if(player){
-            board[m.row-'a'][m.col] = DomineeringPosition.HUMAN;
-            board[m.row2-'a'][m.col2] = DomineeringPosition.HUMAN;
+            board[m.row][m.col] = DomineeringPosition.HUMAN;
+            board[m.row2][m.col2] = DomineeringPosition.HUMAN;
         }else{
-            board[m.row-'a'][m.col] = DomineeringPosition.PROGRAM;
-            board[m.row2-'a'][m.col2] = DomineeringPosition.PROGRAM;
+            board[m.row][m.col] = DomineeringPosition.PROGRAM;
+            board[m.row2][m.col2] = DomineeringPosition.PROGRAM;
         }
         return pos;
     }
@@ -169,7 +167,7 @@ public class Domineering extends GameSearch{
     public boolean reachedMaxDepth(Position p, int depth) {
         boolean ret = false;
         DomineeringPosition dp = (DomineeringPosition) p;
-        if (depth >= 10) return true;
+        if (depth >= 4) return true;
         if (wonPosition(p, false)) ret = true;
         else if (wonPosition(p, true))  ret = true;
         else if (drawnPosition(p)) ret = true;
@@ -180,6 +178,7 @@ public class Domineering extends GameSearch{
     public Move createMove() {
         return null;
     }
+
 
     @Override
     public Move createMove(char row, int col, char row2, int col2) {
@@ -260,7 +259,20 @@ public class Domineering extends GameSearch{
 
     public static void main(String [] args) {
         DomineeringPosition dp = new DomineeringPosition();
+//        for (int i=0; i<8; i++) {
+//            dp.board[i][0]=-1;
+//        }
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    System.out.print(dp.board[i][j] + "\t");
+                }
+                System.out.println(); // Move to the next line after each row
+            }
+
+
+
         Domineering d = new Domineering();
+
         d.playGame(dp, true);
     }
 }

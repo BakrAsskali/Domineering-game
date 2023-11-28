@@ -1,9 +1,9 @@
 package GameSearch;
 
 public class DomineeringMove extends Move{
-    public char row;
+    public int row;
     public int col;
-    public char row2;
+    public int row2;
     public int col2;
 
     @Override
@@ -11,7 +11,7 @@ public class DomineeringMove extends Move{
         return ""+row+col+row2+col2;
     }
 
-    public DomineeringMove(char row, int col, char row2, int col2){
+    public DomineeringMove(int row, int col, int row2, int col2){
         this.row = row;
         this.col = col;
         this.row2 = row2;
