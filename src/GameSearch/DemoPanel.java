@@ -41,6 +41,13 @@ public class DemoPanel extends JFrame {
         JButton continueButton = new JButton("Continue");
         JButton quitButton = new JButton("Quit");
 
+
+        startButton.setVerticalAlignment(JLabel.CENTER);
+        startButton.setHorizontalAlignment(JLabel.CENTER);
+
+
+
+
         // Create and populate the level combo box
         levelComboBox = new JComboBox<>(new String[]{"1", "2", "3"});
         levelComboBox.setSelectedIndex(1); // Set the default selected level
@@ -59,9 +66,7 @@ public class DemoPanel extends JFrame {
         buttonPanel.add(continueButton);
         buttonPanel.add(quitButton);
 
-        // Add combo boxes to the button panel
-        buttonPanel.add(new JLabel("Select Level:"));
-        buttonPanel.add(new JLabel("Select Players:"));
+
 
         this.setResizable(false);
         this.setIconImage(img.getImage());
@@ -92,7 +97,10 @@ public class DemoPanel extends JFrame {
         buttonPanel.add(startButton);
         buttonPanel.add(continueButton);
         buttonPanel.add(quitButton);
+        // Add combo boxes to the button panel
+        buttonPanel.add(new JLabel("Select Level:"));
         buttonPanel.add(levelComboBox);
+        buttonPanel.add(new JLabel("Select Players:"));
         buttonPanel.add(playerComboBox);
 
 
