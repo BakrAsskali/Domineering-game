@@ -35,20 +35,24 @@ public class DemoPanel extends JFrame {
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout()); // Use FlowLayout for left-to-right flow
+
+
         JButton startButton = new JButton("Start");
         JButton continueButton = new JButton("Continue");
         JButton quitButton = new JButton("Quit");
 
-
         // Create and populate the level combo box
         levelComboBox = new JComboBox<>(new String[]{"1", "2", "3"});
         levelComboBox.setSelectedIndex(1); // Set the default selected level
-        int level=levelComboBox.getSelectedIndex()+1;
 
         // Create and populate the player combo box
         playerComboBox = new JComboBox<>(new String[]{"P1 vs P2", "P1 vs Computer"});
         playerComboBox.setSelectedIndex(1); // Set the default selected player option
+
         boolean player = playerComboBox.getSelectedIndex() == 0 ? false : true;
+        int level=levelComboBox.getSelectedIndex()+1;
+
+        ImageIcon img= new ImageIcon("img.png");
 
         // Add components to the button panel
         buttonPanel.add(startButton);
@@ -59,6 +63,10 @@ public class DemoPanel extends JFrame {
         buttonPanel.add(new JLabel("Select Level:"));
         buttonPanel.add(new JLabel("Select Players:"));
 
+        this.setResizable(false);
+        this.setIconImage(img.getImage());
+        this.getContentPane().setBackground(Color.BLUE);
+        this.setTitle("Welcome to Domineering");
 
         startButton.addActionListener(new ActionListener() {
             @Override
