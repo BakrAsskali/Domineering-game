@@ -27,23 +27,38 @@ public class Domineering extends GameSearch{
         boolean ret = false;
         DomineeringPosition dp = (DomineeringPosition) p;
         int [][] board = dp.board;
+        int place1=0;
+        int place2=0;
         for (int i=0; i<8; i++) {
-            for(int j=0; j<8; j++){
-                if(board[i][j] == DomineeringPosition.BLANK) {
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] == DomineeringPosition.BLANK) {
                     if (player) {
                         if (i + 1 < 8 && board[i + 1][j] == DomineeringPosition.BLANK) {
+                            place2++;
                             break;
                         }
+
                     } else {
                         if (j + 1 < 8 && board[i][j + 1] == DomineeringPosition.BLANK) {
+                            place1++;
                             break;
                         }
                     }
                 }
+
             }
+
         }
-        return ret;
+        if (player) {
+            if (place2 > 0) return false;
+            return true;
+        } else {
+            if (place1 > 0) return false;
+            return true;
+
+        }
     }
+
 
     @Override
     public float positionEvaluation(Position p, boolean player) {
@@ -121,19 +136,19 @@ public class Domineering extends GameSearch{
             for(int j=0; j<8; j++){
                 if(board[i][j] == DomineeringPosition.BLANK){
                     if(player) {
-                            if (i + 1 < 8 && board[i + 1][j] == DomineeringPosition.BLANK) {
+                            if (j + 1 < 8 && board[i][j + 1] == DomineeringPosition.BLANK) {
                                 DomineeringPosition pos2 = new DomineeringPosition();
                                 for(int k = 0; k < 8; k++) System.arraycopy(board[k], 0, pos2.board[k], 0, 8);
                                 pos2.board[i][j] = DomineeringPosition.HUMAN;
-                                pos2.board[i + 1][j] = DomineeringPosition.HUMAN;
+                                pos2.board[i][j+1] = DomineeringPosition.HUMAN;
                                 ret.add(pos2);
                             }
                         }else {
-                        if (j + 1 < 8 && board[i][j+1] == DomineeringPosition.BLANK) {
+                        if (i + 1 < 8 && board[i + 1][j] == DomineeringPosition.BLANK) {
                             DomineeringPosition pos2 = new DomineeringPosition();
                             for(int k = 0; k < 8; k++) System.arraycopy(board[k], 0, pos2.board[k], 0, 8);
                             pos2.board[i][j] = DomineeringPosition.PROGRAM;
-                            pos2.board[i][j+1] = DomineeringPosition.PROGRAM;
+                            pos2.board[i+1][j] = DomineeringPosition.PROGRAM;
                             ret.add(pos2);
 
                         }
@@ -166,7 +181,7 @@ public class Domineering extends GameSearch{
     @Override
     public boolean reachedMaxDepth(Position p, int depth) {
         boolean ret = false;
-        if (depth >= 2) return true;
+        if (depth >= 1) return true;
         return ret;
     }
 
