@@ -131,7 +131,7 @@ public class Domineering extends GameSearch{
                         }else {
                         if (j + 1 < 8 && board[i][j+1] == DomineeringPosition.BLANK) {
                             DomineeringPosition pos2 = new DomineeringPosition();
-                            for(int k = 0; k < 8; k++) for(int l = 0; l < 8; l++) pos2.board[k][l] = board[k][l];
+                            for(int k = 0; k < 8; k++) System.arraycopy(board[k], 0, pos2.board[k], 0, 8);
                             pos2.board[i][j] = DomineeringPosition.PROGRAM;
                             pos2.board[i][j+1] = DomineeringPosition.PROGRAM;
                             ret.add(pos2);
@@ -166,11 +166,7 @@ public class Domineering extends GameSearch{
     @Override
     public boolean reachedMaxDepth(Position p, int depth) {
         boolean ret = false;
-        DomineeringPosition dp = (DomineeringPosition) p;
-        if (depth >= 4) return true;
-        if (wonPosition(p, false)) ret = true;
-        else if (wonPosition(p, true))  ret = true;
-        else if (drawnPosition(p)) ret = true;
+        if (depth >= 2) return true;
         return ret;
     }
 
@@ -190,6 +186,7 @@ public class Domineering extends GameSearch{
         return dm;
     }
 
+
     @Override
     public void playGame(Position startingPosition, boolean humanPlayFirst){
         DemoPanel dp = new DemoPanel();
@@ -199,7 +196,6 @@ public class Domineering extends GameSearch{
             startingPosition = (Position)v.elementAt(1);
         }
 
-
         while(!dp.gameStart){
             try {
                 Thread.sleep(100); // Adjust the sleep time as needed
@@ -208,7 +204,6 @@ public class Domineering extends GameSearch{
             }
         }
         while (true) {
-
             printPosition(startingPosition);
             if (wonPosition(startingPosition, PROGRAM)) {
                 System.out.println("Program won");
@@ -233,22 +228,19 @@ public class Domineering extends GameSearch{
             }
             dp.clicked = false;
             Move move = dp.move;
+
             startingPosition = makeMove(startingPosition, HUMAN, move);
             dp.updatePosition(startingPosition);
             printPosition(startingPosition);
-
             if (wonPosition(startingPosition, HUMAN)) {
                 System.out.println("Human won");
                 break;
             }
-
             Vector v = alphaBeta(0, startingPosition, PROGRAM);
-
             Enumeration enum2 = v.elements();
             while (enum2.hasMoreElements()) {
                 System.out.println(" next element: " + enum2.nextElement());
             }
-
             startingPosition = (Position)v.elementAt(1);
             if(startingPosition ==null){
                 System.out.println("Drawn game");
@@ -257,8 +249,12 @@ public class Domineering extends GameSearch{
         }
     }
 
+
+
     public static void main(String [] args) {
+//
         DomineeringPosition dp = new DomineeringPosition();
+
 //        for (int i=0; i<8; i++) {
 //            dp.board[i][0]=-1;
 //        }
@@ -273,6 +269,6 @@ public class Domineering extends GameSearch{
 
         Domineering d = new Domineering();
 
-        d.playGame(dp, true);
+        d.playGame(dp, false);
     }
 }

@@ -181,7 +181,7 @@ public class DemoPanel extends JFrame {
 
             // Set color for player 1 and the node above
             clickedNode.setAsCheckedPlayer1();
-            move = new DomineeringMove((char) (row + 'a'), col, (char) (row + 'a'), col + 1);
+            move = new DomineeringMove((char) (row), col, (char) (row), col + 1);
 
         clicked = true;
     }

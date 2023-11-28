@@ -117,8 +117,11 @@ public abstract class GameSearch {
                 System.out.println("Drawn game");
                 break;
             }
+
             System.out.print("\nYour move:");
+
             Move move = createMove();
+
             startingPosition = makeMove(startingPosition, HUMAN, move);
 
             printPosition(startingPosition);
