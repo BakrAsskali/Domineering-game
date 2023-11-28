@@ -7,9 +7,6 @@
     <list default="true" id="a2a2b5d5-0402-47cc-a8e6-ee2c19f445ec" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GameSearch/DemoPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameSearch/DemoPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GameSearch/Domineering.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameSearch/Domineering.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GameSearch/GameSearch.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameSearch/GameSearch.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GameSearch/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameSearch/Node.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -139,6 +136,10 @@
       <workItem from="1700903354197" duration="159000" />
       <workItem from="1700994676282" duration="176000" />
       <workItem from="1700998669906" duration="1899000" />
+      <workItem from="1701112623429" duration="12819000" />
+      <workItem from="1701130428231" duration="12000" />
+      <workItem from="1701167120854" duration="646000" />
+      <workItem from="1701172380219" duration="8748000" />
     </task>
     <task id="LOCAL-00001" summary="Remplacer la méthode  alphaBetaHelper(...) pour tenir compte de la version de la stratégie alpha-beta décrite dans la diapostive 18 du cours. (done)">
       <option name="closed" value="true" />
