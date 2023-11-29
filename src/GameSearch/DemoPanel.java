@@ -9,6 +9,8 @@ import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Vector;
 
 public class DemoPanel extends JFrame {
     public Move move;
@@ -134,7 +136,19 @@ public class DemoPanel extends JFrame {
                 saveGridToFile("save.txt");
             }
         });
-        this.add(button,BorderLayout.NORTH);
+        JButton hintButton=new JButton("NEED HELP");
+
+        hintButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showHint(node,player);
+            }
+        });
+
+        add(button, BorderLayout.BEFORE_FIRST_LINE);
+        add(hintButton, BorderLayout.LINE_START);
+
+
         this.setVisible(true);
         this.pack();
         gameStart = true;
@@ -142,6 +156,8 @@ public class DemoPanel extends JFrame {
 
 
     }
+
+
     private void addMouseListenerToNode(Node currentNode) {
         int nodeCol = currentNode.col;
         int nodeRow = currentNode.row;
@@ -231,10 +247,5 @@ public class DemoPanel extends JFrame {
         }
     }
 
-    private void showHint(){
-        Color blankColor=Color.WHITE;
-        Color hintColor=Color.GREEN;
 
-
-    }
 }

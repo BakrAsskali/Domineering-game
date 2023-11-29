@@ -1,5 +1,6 @@
 package GameSearch;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -240,10 +241,6 @@ public class Domineering extends GameSearch{
                 System.out.println("Human won");
                 break;
             }
-            if (drawnPosition(startingPosition)) {
-                System.out.println("Drawn game");
-                break;
-            }
 
             dp.updatePosition(startingPosition);
             while(!dp.clicked){
@@ -253,6 +250,7 @@ public class Domineering extends GameSearch{
                     e.printStackTrace();
                 }
             }
+
             dp.clicked = false;
             Move move = dp.move;
 
@@ -263,11 +261,13 @@ public class Domineering extends GameSearch{
                 System.out.println("Human won");
                 break;
             }
+
             Vector v = alphaBeta(0, startingPosition, PROGRAM);
             Enumeration enum2 = v.elements();
             while (enum2.hasMoreElements()) {
                 System.out.println(" next element: " + enum2.nextElement());
             }
+
             startingPosition = (Position)v.elementAt(1);
             if(startingPosition ==null){
                 System.out.println("Drawn game");
@@ -276,6 +276,60 @@ public class Domineering extends GameSearch{
         }
     }
 
+
+    public Position getHintPos(Position position, boolean player){
+
+        if(player){
+            Vector v = alphaBeta(0, position, HUMAN);
+            position = (Position)v.elementAt(1);
+
+
+            position = (Position)v.elementAt(1);
+        }else{
+
+            Vector v = alphaBeta(0, position, PROGRAM);
+            Position p = (Position)v.elementAt(1);
+            position = (Position)v.elementAt(1);
+
+        }
+
+        //return the best move
+        return  position;
+    }
+
+    private DomineeringMove showHintMove(Position p, boolean player){
+        Color blankColor=Color.WHITE;
+        Color hintColor=Color.GREEN;
+
+        DomineeringPosition dp = (DomineeringPosition) p;
+        DomineeringPosition hintPos =(DomineeringPosition) getHintPos(p, player);
+
+        int [][] board1 = dp.board;
+        int [][] board2 = hintPos.board;
+        DomineeringMove dm=new DomineeringMove(-1,-1,-1,-1);
+        //find the difference between two boards
+
+
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                if (board1[row][col] != board2[row][col]) {
+                    if(dm.col==-1 && dm.row==-1){
+                        dm.col = col;
+                        dm.row = row;
+                    }else {
+                        dm.col2 = col;
+                        dm.row2 = row;
+                    }
+
+                }
+            }
+        }
+
+
+        //highlight the hint
+       return dm;
+
+    }
 
 
     public static void main(String [] args) {
