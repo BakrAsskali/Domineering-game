@@ -10,8 +10,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Vector;
+
 
 public class DemoPanel extends JFrame {
     public Move move;
@@ -26,8 +25,6 @@ public class DemoPanel extends JFrame {
     public boolean hint=false;
 
     Node[][] node = new Node[maxCol][maxRow];
-    private JComboBox<String> levelComboBox;
-    private JComboBox<String> playerComboBox;
 
     public DemoPanel() {
         initializeUI();
@@ -53,15 +50,15 @@ public class DemoPanel extends JFrame {
 
 
         // Create and populate the level combo box
-        levelComboBox = new JComboBox<>(new String[]{"1", "2", "3"});
+        JComboBox<String> levelComboBox = new JComboBox<>(new String[]{"1", "2", "3"});
         levelComboBox.setSelectedIndex(1); // Set the default selected level
 
         // Create and populate the player combo box
-        playerComboBox = new JComboBox<>(new String[]{"P1 vs P2", "P1 vs Computer"});
+        JComboBox<String> playerComboBox = new JComboBox<>(new String[]{"P1 vs P2", "P1 vs Computer"});
         playerComboBox.setSelectedIndex(1); // Set the default selected player option
 
-        boolean player = playerComboBox.getSelectedIndex() == 0 ? false : true;
-        int level=levelComboBox.getSelectedIndex()+1;
+        boolean player = playerComboBox.getSelectedIndex() != 0;
+        int level= levelComboBox.getSelectedIndex()+1;
 
         ImageIcon img= new ImageIcon("img.png");
 
@@ -77,26 +74,11 @@ public class DemoPanel extends JFrame {
         this.getContentPane().setBackground(Color.BLUE);
         this.setTitle("Welcome to Domineering");
 
-        startButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gameStart(level, player);
-            }
-        });
+        startButton.addActionListener(e -> gameStart(level, player));
 
-        continueButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Continue button clicked");
-            }
-        });
+        continueButton.addActionListener(e -> System.out.println("Continue button clicked"));
 
-        quitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+        quitButton.addActionListener(e -> System.exit(0));
 
         buttonPanel.add(startButton);
         buttonPanel.add(continueButton);
@@ -161,28 +143,6 @@ public class DemoPanel extends JFrame {
 
 
     }
-
-//    public void showHint( Node[][] node, boolean player){
-//        int[][] board = new int[8][8];
-//        for (int i=0; i<8; i++) {
-//            for(int j=0; j<8; j++){
-//                if(node[i][j].checked){
-//                    board[i][j]=DomineeringPosition.HUMAN;
-//                }
-//                else{
-//                    board[i][j]=DomineeringPosition.BLANK;
-//                }
-//            }
-//        }
-//
-//
-//        Vector v = alphaBeta(1, new DomineeringPosition(), player);
-//        Move move = (Move) v.elementAt(1);
-//        int row = move.row1;
-//        int col = move.col1;
-//        node[row][col].setBackground(Color.GREEN);
-//        node[row][col+1].setBackground(Color.GREEN);
-//    }
 
     private void addMouseListenerToNode(Node currentNode) {
         int nodeCol = currentNode.col;
