@@ -165,7 +165,7 @@ public class Domineering extends GameSearch{
     @Override
     public boolean reachedMaxDepth(Position p, int depth) {
         boolean ret = false;
-        if (depth >= 1) return true;
+        if (depth >= 15) return true;
         return ret;
     }
 
@@ -174,12 +174,84 @@ public class Domineering extends GameSearch{
         return null;
     }
 
+    public Vector maxValue(int depth, Position p, boolean player, float alpha, float beta) {
+        Vector v = new Vector(2);
+        if (wonPosition(p, PROGRAM)) {
+            v.addElement(new Float(1000000.0f));
+            v.addElement(null);
+            return v;
+        }
+        if (wonPosition(p, HUMAN)) {
+            v.addElement(new Float(-1000000.0f));
+            v.addElement(null);
+            return v;
+        }
+        if (reachedMaxDepth(p, depth)) {
+            float value = positionEvaluation(p, player);
+            v.addElement(new Float(value));
+            v.addElement(null);
+            return v;
+        }
+        float bestValue = -1000000.0f;
+        Position [] moves = possibleMoves(p, player);
+        Position bestPosition = null;
+        for (int i=0; i<moves.length; i++) {
+            Vector v2 = minValue(depth+1, moves[i], !player, alpha, beta);
+            float value = ((Float)v2.elementAt(0)).floatValue();
+            if (value > bestValue) {
+                bestValue = value;
+                bestPosition = moves[i];
+            }
+            if (value > alpha) alpha = value;
+            if (alpha >= beta) break;
+        }
+        v.addElement(new Float(bestValue));
+        v.addElement(bestPosition);
+        return v;
+    }
+
+    public Vector minValue(int depth, Position p, boolean player, float alpha, float beta) {
+        Vector v = new Vector(2);
+        if (wonPosition(p, PROGRAM)) {
+            v.addElement(new Float(1000000.0f));
+            v.addElement(null);
+            return v;
+        }
+        if (wonPosition(p, HUMAN)) {
+            v.addElement(new Float(-1000000.0f));
+            v.addElement(null);
+            return v;
+        }
+        if (reachedMaxDepth(p, depth)) {
+            float value = positionEvaluation(p, player);
+            v.addElement(new Float(value));
+            v.addElement(null);
+            return v;
+        }
+        float bestValue = 1000000.0f;
+        Position [] moves = possibleMoves(p, player);
+        Position bestPosition = null;
+        for (int i=0; i<moves.length; i++) {
+            Vector v2 = maxValue(depth+1, moves[i], !player, alpha, beta);
+            float value = ((Float)v2.elementAt(0)).floatValue();
+            if (value < bestValue) {
+                bestValue = value;
+                bestPosition = moves[i];
+            }
+            if (value < beta) beta = value;
+            if (alpha >= beta) break;
+        }
+        v.addElement(new Float(bestValue));
+        v.addElement(bestPosition);
+        return v;
+    }
+
     @Override
     public void playGame(Position startingPosition, boolean humanPlayFirst){
         DemoPanel dp = new DemoPanel();
         dp.pack();
         if (!humanPlayFirst) {
-            Vector v = alphaBeta(0, startingPosition, PROGRAM);
+            Vector v = alphaBeta(1, startingPosition, PROGRAM);
             startingPosition = (Position)v.elementAt(1);
         }
 
@@ -220,16 +292,12 @@ public class Domineering extends GameSearch{
                     System.out.println("Human won");
                     break;
                 }
-                Vector v = alphaBeta(0, startingPosition, PROGRAM);
+                Vector v = maxValue(10, startingPosition, PROGRAM, -1000000.0f, 1000000.0f);
                 Enumeration enum2 = v.elements();
                 while (enum2.hasMoreElements()) {
                     System.out.println(" next element: " + enum2.nextElement());
                 }
                 startingPosition = (Position) v.elementAt(1);
-                if (startingPosition == null) {
-                    System.out.println("Drawn game");
-                    break;
-                }
             }
         } else {
             while (true) {
