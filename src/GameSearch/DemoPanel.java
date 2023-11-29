@@ -146,9 +146,20 @@ public class DemoPanel extends JFrame {
         gamePanel.add(saveButtonPanel, BorderLayout.SOUTH);
 
         this.add(gamePanel);
+        JButton button=new JButton("Save The game");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveGridToFile("save.txt");
+            }
+        });
+        this.add(button,BorderLayout.NORTH);
         this.setVisible(true);
         this.pack();
         gameStart = true;
+
+
+
     }
 
     private void addMouseListenerToNode(Node currentNode) {
@@ -304,5 +315,12 @@ public class DemoPanel extends JFrame {
                 }
             }
         }
+    }
+
+    private void showHint(){
+        Color blankColor=Color.WHITE;
+        Color hintColor=Color.GREEN;
+
+
     }
 }

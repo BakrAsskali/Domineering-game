@@ -373,6 +373,7 @@ public class Domineering extends GameSearch{
 
 
     public static void main(String [] args) {
+//
         DomineeringPosition dp = new DomineeringPosition();
 
         for (int i = 0; i < 8; i++) {
