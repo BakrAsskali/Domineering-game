@@ -1,5 +1,6 @@
 package GameSearch;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -369,6 +370,60 @@ public class Domineering extends GameSearch{
             board[m.row2][m.col2] = DomineeringPosition.PROGRAM;
         }
         return pos;
+    }
+
+    public Position getHintPos(Position position, boolean player){
+
+        if(player){
+            Vector v = alphaBeta(0, position, HUMAN);
+            position = (Position)v.elementAt(1);
+
+
+            position = (Position)v.elementAt(1);
+        }else{
+
+            Vector v = alphaBeta(0, position, PROGRAM);
+            Position p = (Position)v.elementAt(1);
+            position = (Position)v.elementAt(1);
+
+        }
+
+        //return the best move
+        return  position;
+    }
+
+    private DomineeringMove showHintMove(Position p, boolean player){
+        Color blankColor=Color.WHITE;
+        Color hintColor=Color.GREEN;
+
+        DomineeringPosition dp = (DomineeringPosition) p;
+        DomineeringPosition hintPos =(DomineeringPosition) getHintPos(p, player);
+
+        int [][] board1 = dp.board;
+        int [][] board2 = hintPos.board;
+        DomineeringMove dm=new DomineeringMove(-1,-1,-1,-1);
+        //find the difference between two boards
+
+
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                if (board1[row][col] != board2[row][col]) {
+                    if(dm.col==-1 && dm.row==-1){
+                        dm.col = col;
+                        dm.row = row;
+                    }else {
+                        dm.col2 = col;
+                        dm.row2 = row;
+                    }
+
+                }
+            }
+        }
+
+
+        //highlight the hint
+       return dm;
+
     }
 
 
