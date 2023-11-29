@@ -127,11 +127,20 @@ public class DemoPanel extends JFrame {
             }
         }
         this.add(gamePanel);
-        JButton button=new JButton("Save");
-        this.add(button,BorderLayout.SOUTH);
+        JButton button=new JButton("Save The game");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveGridToFile("save.txt");
+            }
+        });
+        this.add(button,BorderLayout.NORTH);
         this.setVisible(true);
         this.pack();
         gameStart = true;
+
+
+
     }
     private void addMouseListenerToNode(Node currentNode) {
         int nodeCol = currentNode.col;
