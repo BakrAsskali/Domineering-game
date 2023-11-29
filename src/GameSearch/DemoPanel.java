@@ -29,7 +29,8 @@ public class DemoPanel extends JFrame {
     public boolean twoPlayer = false;
 
     public boolean player1turn = true;
-    public Position position;
+    public DomineeringPosition position;
+    public boolean loadedgame = false;
 
     public DemoPanel() {
         initializeUI();
@@ -207,21 +208,19 @@ public class DemoPanel extends JFrame {
             while((line=reader.readLine())!=null){
                 String[] parts=line.split("");
                 int player=Integer.parseInt(parts[0]);
-                int col=Integer.parseInt(parts[1]);
-                int row=Integer.parseInt(parts[2]);
-                gameStart(levelComboBox.getSelectedIndex()+1, playerComboBox.getSelectedIndex() == 0);
+                int row=Integer.parseInt(parts[1]);
+                int col=Integer.parseInt(parts[2]);
+                System.out.println(player+" "+row+" "+col);
                 if(player==1){
-                    node[col][row].setAsCheckedPlayer1();
+                    node[row][col] = new Node(row, col);
+                    node[row][col].setAsCheckedPlayer1();
                 }else if(player==2){
-                    node[col][row].setAsCheckedPlayer2();
+                    node[row][col] = new Node(row, col);
+                    node[row][col].setAsCheckedPlayer2();
                 }
                 position = new DomineeringPosition();
-                ((DomineeringPosition) position).board[col][row]=player;
-                if(player==1){
-                    player1turn=false;
-                }else{
-                    player1turn=true;
-                }
+                position.board[row][col]=player;
+                loadedgame=true;
             }
         }catch(IOException e){
             e.printStackTrace();
