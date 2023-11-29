@@ -26,7 +26,6 @@ public abstract class GameSearch {
      * Abstract methods:
      */
 
-    public abstract boolean drawnPosition(Position p);
     public abstract boolean wonPosition(Position p, boolean player);
     public abstract float positionEvaluation(Position p, boolean player);
     public abstract void printPosition(Position p);
@@ -41,7 +40,6 @@ public abstract class GameSearch {
 
     protected Vector alphaBeta(int depth, Position p, boolean player) {
         Vector v = alphaBetaHelper(depth, p, player, 1000000.0f, -1000000.0f);
-        //System.out.println("^^ v(0): " + v.elementAt(0) + ", v(1): " + v.elementAt(1));
         return v;
     }
 
@@ -95,8 +93,6 @@ public abstract class GameSearch {
         return v3;
     }
 
-    public abstract Move createMove(char row, int col, char row2, int col2);
-
     public void playGame(Position startingPosition, boolean humanPlayFirst) {
         if (humanPlayFirst == false) {
             Vector v = alphaBeta(0, startingPosition, PROGRAM);
@@ -111,10 +107,6 @@ public abstract class GameSearch {
             }
             if (wonPosition(startingPosition, HUMAN)) {
                 System.out.println("Human won");
-                break;
-            }
-            if (drawnPosition(startingPosition)) {
-                System.out.println("Drawn game");
                 break;
             }
 
@@ -139,10 +131,6 @@ public abstract class GameSearch {
             }
 
             startingPosition = (Position)v.elementAt(1);
-            if(startingPosition ==null){
-                System.out.println("Drawn game");
-                break;
-            }
         }
     }
 }

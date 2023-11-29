@@ -6,22 +6,6 @@ import java.util.Vector;
 
 public class Domineering extends GameSearch{
 
-
-    @Override
-    public boolean drawnPosition(Position p) {
-        Boolean ret = true;
-        DomineeringPosition dp = (DomineeringPosition) p;
-        int [][] board = dp.board;
-        for (int i=0; i<8; i++) {
-            for(int j=0; j<8; j++){
-                if(board[i][j] == DomineeringPosition.BLANK){
-                    return false;
-                }
-            }
-        }
-        return ret;
-    }
-
     @Override
     public boolean wonPosition(Position p, boolean player) {
         boolean ret = false;
@@ -190,18 +174,6 @@ public class Domineering extends GameSearch{
         return null;
     }
 
-
-    @Override
-    public Move createMove(char row, int col, char row2, int col2) {
-        DomineeringMove dm = new DomineeringMove();
-        dm.row = row;
-        dm.col = col;
-        dm.row2 = row2;
-        dm.col2 = col2;
-        return dm;
-    }
-
-
     @Override
     public void playGame(Position startingPosition, boolean humanPlayFirst){
         DemoPanel dp = new DemoPanel();
@@ -226,10 +198,6 @@ public class Domineering extends GameSearch{
             }
             if (wonPosition(startingPosition, HUMAN)) {
                 System.out.println("Human won");
-                break;
-            }
-            if (drawnPosition(startingPosition)) {
-                System.out.println("Drawn game");
                 break;
             }
 
@@ -267,23 +235,19 @@ public class Domineering extends GameSearch{
 
 
     public static void main(String [] args) {
-//
         DomineeringPosition dp = new DomineeringPosition();
 
-//        for (int i=0; i<8; i++) {
-//            dp.board[i][0]=-1;
-//        }
-            for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
-                    System.out.print(dp.board[i][j] + "\t");
-                }
-                System.out.println(); // Move to the next line after each row
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                System.out.print(dp.board[i][j] + "\t");
             }
+            System.out.println(); // Move to the next line after each row
+        }
 
 
 
         Domineering d = new Domineering();
 
-        d.playGame(dp, false);
+        d.playGame(dp, true);
     }
 }
