@@ -277,7 +277,7 @@ public class Domineering extends GameSearch{
                     System.out.println("Human won");
                     break;
                 }
-                while (!dp.clicked && !dp.hint) {
+                while (!dp.clicked) {
                     try {
                         Thread.sleep(100); // Adjust the sleep time as needed
                     } catch (InterruptedException e) {
@@ -404,11 +404,11 @@ public class Domineering extends GameSearch{
     public Position getHintPos(Position position, boolean player){
 
         if(player){
-            Vector v = alphaBeta(0, position, HUMAN);
+            Vector v = maxValue(5, position, HUMAN, 1000000.0f, -1000000.0f);
             position = (Position)v.elementAt(1);
         }else{
 
-            Vector v = alphaBeta(0, position, PROGRAM);
+            Vector v = minValue(5, position, PROGRAM, 1000000.0f, -1000000.0f);
             Position p = (Position)v.elementAt(1);
             position = (Position)v.elementAt(1);
 

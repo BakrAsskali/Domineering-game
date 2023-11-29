@@ -324,7 +324,8 @@ public class DemoPanel extends JFrame {
                 if(board[i][j]==DomineeringPosition.Hint){
                     if(hint){
                         node[i][j].setBackground(Color.GREEN);
-                    }                }
+                    }
+                }
             }
         }
     }
