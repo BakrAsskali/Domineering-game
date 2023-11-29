@@ -150,7 +150,7 @@ public class DemoPanel extends JFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                saveGridToFile("save.txt");
+                saveGridToFile();
             }
         });
         this.add(button,BorderLayout.NORTH);
