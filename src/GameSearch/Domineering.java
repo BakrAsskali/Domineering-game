@@ -9,18 +9,30 @@ public class Domineering extends GameSearch{
 
     @Override
     public boolean drawnPosition(Position p) {
-        Boolean ret = true;
+        Boolean ret = false;
         DomineeringPosition dp = (DomineeringPosition) p;
         int [][] board = dp.board;
+        if(wonPosition(p, true) && wonPosition(p, false)) return false;
         for (int i=0; i<8; i++) {
             for(int j=0; j<8; j++){
                 if(board[i][j] == DomineeringPosition.BLANK){
-                    return false;
+                    if (i + 1 < 8 && board[i + 1][j] == DomineeringPosition.BLANK) {
+                        return false;
+                    }
+                    if (j + 1 < 8 && board[i][j + 1] == DomineeringPosition.BLANK) {
+                        return false;
+                    }
                 }
             }
         }
         return ret;
     }
+
+
+
+
+
+
 
     @Override
     public boolean wonPosition(Position p, boolean player) {
@@ -284,6 +296,6 @@ public class Domineering extends GameSearch{
 
         Domineering d = new Domineering();
 
-        d.playGame(dp, false);
+        d.playGame(dp, true);
     }
 }

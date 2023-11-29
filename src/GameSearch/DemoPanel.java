@@ -127,6 +127,8 @@ public class DemoPanel extends JFrame {
             }
         }
         this.add(gamePanel);
+        JButton button=new JButton("Save");
+        this.add(button,BorderLayout.SOUTH);
         this.setVisible(true);
         this.pack();
         gameStart = true;
@@ -218,5 +220,12 @@ public class DemoPanel extends JFrame {
                 }
             }
         }
+    }
+
+    private void showHint(){
+        Color blankColor=Color.WHITE;
+        Color hintColor=Color.GREEN;
+
+
     }
 }
