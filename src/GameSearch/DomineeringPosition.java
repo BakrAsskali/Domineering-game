@@ -9,7 +9,7 @@ public class DomineeringPosition extends Position{
     int row=8;
 
 
-    int [][] board = new int[col][row];
+    public int [][] board = new int[col][row];
 
     DomineeringPosition(int col, int row){
         this.col= col;
@@ -29,7 +29,6 @@ public class DomineeringPosition extends Position{
             }
         }
         board=new int[this.col][this.row];
-
     }
     public String toString() {
         StringBuffer sb = new StringBuffer("[");
