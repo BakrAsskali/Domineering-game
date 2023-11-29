@@ -190,48 +190,113 @@ public class Domineering extends GameSearch{
                 e.printStackTrace();
             }
         }
-        while (true) {
-            printPosition(startingPosition);
-            if (wonPosition(startingPosition, PROGRAM)) {
-                System.out.println("Program won");
-                break;
-            }
-            if (wonPosition(startingPosition, HUMAN)) {
-                System.out.println("Human won");
-                break;
-            }
+        if (dp.twoPlayer == false) {
+            while (true) {
+                printPosition(startingPosition);
+                if (wonPosition(startingPosition, PROGRAM)) {
+                    System.out.println("Program won");
+                    break;
+                }
+                if (wonPosition(startingPosition, HUMAN)) {
+                    System.out.println("Human won");
+                    break;
+                }
 
-            dp.updatePosition(startingPosition);
-            while(!dp.clicked){
-                try {
-                    Thread.sleep(100); // Adjust the sleep time as needed
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                dp.updatePosition(startingPosition);
+                while (!dp.clicked) {
+                    try {
+                        Thread.sleep(100); // Adjust the sleep time as needed
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                dp.clicked = false;
+                Move move = dp.move;
+
+                startingPosition = makeMove(startingPosition, HUMAN, move);
+                dp.updatePosition(startingPosition);
+                printPosition(startingPosition);
+                if (wonPosition(startingPosition, HUMAN)) {
+                    System.out.println("Human won");
+                    break;
+                }
+                Vector v = alphaBeta(0, startingPosition, PROGRAM);
+                Enumeration enum2 = v.elements();
+                while (enum2.hasMoreElements()) {
+                    System.out.println(" next element: " + enum2.nextElement());
+                }
+                startingPosition = (Position) v.elementAt(1);
+                if (startingPosition == null) {
+                    System.out.println("Drawn game");
+                    break;
                 }
             }
-            dp.clicked = false;
-            Move move = dp.move;
+        } else {
+            while (true) {
+                printPosition(startingPosition);
+                if (wonPosition(startingPosition, PROGRAM)) {
+                    System.out.println("Program won");
+                    break;
+                }
+                if (wonPosition(startingPosition, HUMAN)) {
+                    System.out.println("Human won");
+                    break;
+                }
 
-            startingPosition = makeMove(startingPosition, HUMAN, move);
-            dp.updatePosition(startingPosition);
-            printPosition(startingPosition);
-            if (wonPosition(startingPosition, HUMAN)) {
-                System.out.println("Human won");
-                break;
-            }
-            Vector v = alphaBeta(0, startingPosition, PROGRAM);
-            Enumeration enum2 = v.elements();
-            while (enum2.hasMoreElements()) {
-                System.out.println(" next element: " + enum2.nextElement());
-            }
-            startingPosition = (Position)v.elementAt(1);
-            if(startingPosition ==null){
-                System.out.println("Drawn game");
-                break;
+                dp.updatePosition(startingPosition);
+                while (!dp.clicked) {
+                    try {
+                        Thread.sleep(100); // Adjust the sleep time as needed
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                dp.clicked = false;
+                Move move = dp.move;
+
+                startingPosition = makeMove(startingPosition, HUMAN, move);
+                dp.updatePosition(startingPosition);
+                printPosition(startingPosition);
+                if (wonPosition(startingPosition, HUMAN)) {
+                    System.out.println("player 1 won");
+                    break;
+                }
+                dp.updatePosition(startingPosition);
+                while (!dp.clicked) {
+                    try {
+                        Thread.sleep(100); // Adjust the sleep time as needed
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                dp.clicked = false;
+                move = dp.move;
+
+                startingPosition = makeMovePlayer2(startingPosition, PROGRAM, move);
+                dp.updatePosition(startingPosition);
+                printPosition(startingPosition);
+                if (wonPosition(startingPosition, PROGRAM)) {
+                    System.out.println("player 2 won");
+                    break;
+                }
             }
         }
     }
 
+    private Position makeMovePlayer2(Position startingPosition, boolean player, Move move) {
+        DomineeringMove m = (DomineeringMove)move;
+        DomineeringPosition pos = (DomineeringPosition)startingPosition;
+        int [][] board = pos.board;
+
+        if(player){
+            board[m.row][m.col] = DomineeringPosition.HUMAN;
+            board[m.row2][m.col2] = DomineeringPosition.HUMAN;
+        }else{
+            board[m.row][m.col] = DomineeringPosition.PROGRAM;
+            board[m.row2][m.col2] = DomineeringPosition.PROGRAM;
+        }
+        return pos;
+    }
 
 
     public static void main(String [] args) {

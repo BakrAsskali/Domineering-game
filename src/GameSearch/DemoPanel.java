@@ -25,6 +25,10 @@ public class DemoPanel extends JFrame {
     private JComboBox<String> levelComboBox;
     private JComboBox<String> playerComboBox;
 
+    public boolean twoPlayer = false;
+
+    public boolean player1turn = true;
+
     public DemoPanel() {
         initializeUI();
     }
@@ -111,7 +115,7 @@ public class DemoPanel extends JFrame {
     private void gameStart(int level,boolean player) {
         this.getContentPane().removeAll();
         JPanel gamePanel = new JPanel();
-
+        twoPlayer = playerComboBox.getSelectedIndex() == 0;
         gamePanel.setPreferredSize(new Dimension(screenWidth,screenHeight));
         gamePanel.setLayout(new GridLayout(maxCol,maxRow));
         for (int i = 0; i < maxCol; i++) {
@@ -175,30 +179,63 @@ public class DemoPanel extends JFrame {
     private void highlightNode(Node currentNode) {
         int col = currentNode.row;
         int row = currentNode.col;
+        if(!twoPlayer) {
             if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked) {
                 node[row][col].setBackground(Color.ORANGE);
-                node[row][col+1].setBackground(Color.ORANGE);
+                node[row][col + 1].setBackground(Color.ORANGE);
             }
+        } else{
+            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked) {
+                if(player1turn){
+                    node[row][col].setBackground(Color.ORANGE);
+                    node[row][col + 1].setBackground(Color.ORANGE);
+                }else{
+                    node[row][col].setBackground(Color.ORANGE);
+                    node[row+1][col].setBackground(Color.ORANGE);
+                }
+            }
+        }
     }
 
     private void unhighlightNode(Node currentNode) {
         int col = currentNode.col;
         int row = currentNode.row;
+        if(!twoPlayer) {
             if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked) {
-                node[col][row].setBackground(Color.WHITE);
-                node[col][row+1].setBackground(Color.WHITE);
+                node[row][col].setBackground(Color.WHITE);
+                node[row][col + 1].setBackground(Color.WHITE);
             }
-
+        }else{
+            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked) {
+                if(player1turn){
+                    node[row][col].setBackground(Color.WHITE);
+                    node[row][col + 1].setBackground(Color.WHITE);
+                }else{
+                    node[row][col].setBackground(Color.WHITE);
+                    node[row+1][col].setBackground(Color.WHITE);
+                }
+            }
+        }
     }
 
     private void handleClick(Node clickedNode) {
         int col = clickedNode.row;
         int row = clickedNode.col;
-
-            // Set color for player 1 and the node above
-            clickedNode.setAsCheckedPlayer1();
-            move = new DomineeringMove((char) (row), col, (char) (row), col + 1);
-
+        if(player1turn){
+            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked) {
+                clickedNode.setAsCheckedPlayer1();
+                node[col + 1][row].setAsCheckedPlayer1();
+                move = new DomineeringMove((char) (row), col, (char) (row), col + 1);
+                player1turn = false;
+            }
+        }else{
+            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked) {
+                clickedNode.setAsCheckedPlayer2();
+                node[col + 1][row].setAsCheckedPlayer2();
+                move = new DomineeringMove((char) (row), col, (char) (row+1), col);
+                player1turn = true;
+            }
+        }
         clicked = true;
     }
 
