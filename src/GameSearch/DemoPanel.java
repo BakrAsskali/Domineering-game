@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class DemoPanel extends JFrame {
     public boolean twoPlayer = false;
 
     public boolean player1turn = true;
+    public Position position;
 
     public DemoPanel() {
         initializeUI();
@@ -87,16 +89,11 @@ public class DemoPanel extends JFrame {
         continueButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Continue button clicked");
+                loadGameFromFile();
             }
         });
 
-        quitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
+        quitButton.addActionListener(e -> System.exit(0));
 
         buttonPanel.add(startButton);
         buttonPanel.add(continueButton);
@@ -112,29 +109,47 @@ public class DemoPanel extends JFrame {
         this.setVisible(true);
     }
 
-    private void gameStart(int level,boolean player) {
+    private void gameStart(int level, boolean player) {
         this.getContentPane().removeAll();
+
         JPanel gamePanel = new JPanel();
         twoPlayer = playerComboBox.getSelectedIndex() == 0;
-        gamePanel.setPreferredSize(new Dimension(screenWidth,screenHeight));
-        gamePanel.setLayout(new GridLayout(maxCol,maxRow));
+        gamePanel.setPreferredSize(new Dimension(screenWidth, screenHeight));
+        gamePanel.setLayout(new BorderLayout());
+
+        // Create a panel for the node grid
+        JPanel nodeGridPanel = new JPanel(new GridLayout(maxCol, maxRow));
         for (int i = 0; i < maxCol; i++) {
             for (int j = 0; j < maxRow; j++) {
-                node[i][j] = new Node(i,j);
-                gamePanel.add(node[i][j]);
+                node[i][j] = new Node(i, j);
+                nodeGridPanel.add(node[i][j]);
+                addMouseListenerToNode(node[i][j]);
             }
         }
-        
-        for (int i = 0; i < maxCol; i++) {
-            for (int j = 0; j < maxRow; j++) {
-                addMouseListenerToNode( node[i][j] );
+
+        // Save Button
+        JButton saveButton = new JButton("Save");
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveGridToFile(); // Replace with your desired file name
             }
-        }
+        });
+
+        // Create a panel for the save button
+        JPanel saveButtonPanel = new JPanel();
+        saveButtonPanel.add(saveButton);
+
+        // Add the node grid panel to the center and save button panel to the bottom of gamePanel
+        gamePanel.add(nodeGridPanel, BorderLayout.CENTER);
+        gamePanel.add(saveButtonPanel, BorderLayout.SOUTH);
+
         this.add(gamePanel);
         this.setVisible(true);
         this.pack();
         gameStart = true;
     }
+
     private void addMouseListenerToNode(Node currentNode) {
         int nodeCol = currentNode.col;
         int nodeRow = currentNode.row;
@@ -161,18 +176,55 @@ public class DemoPanel extends JFrame {
 
     }
 
-    private void saveGridToFile(String fileName) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+    private void saveGridToFile() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("savedGrid.txt"))) {
             for (int i = 0; i < maxCol; i++) {
                 for (int j = 0; j < maxRow; j++) {
                     Node currentNode = node[i][j];
+                    if (currentNode.checked) {
+                        if(currentNode.getBackground()==Color.BLACK){
+                            writer.write("1");
+                        }else{
+                            writer.write("2");
+                        }
+                    } else {
+                        writer.write("0");
+                    }
                     String nodeString = currentNode.toString(i, j);
+                    writer.write(nodeString);
                     writer.newLine();
                 }
             }
-            System.out.println("Grid saved to " + fileName);
+            System.out.println("Grid saved to " + "savedGrid.txt");
         } catch (IOException ex) {
             ex.printStackTrace();
+        }
+    }
+
+    private void loadGameFromFile() {
+        try(BufferedReader reader=new BufferedReader(new java.io.FileReader("savedGrid.txt"))){
+            String line;
+            while((line=reader.readLine())!=null){
+                String[] parts=line.split("");
+                int player=Integer.parseInt(parts[0]);
+                int col=Integer.parseInt(parts[1]);
+                int row=Integer.parseInt(parts[2]);
+                gameStart(levelComboBox.getSelectedIndex()+1, playerComboBox.getSelectedIndex() == 0);
+                if(player==1){
+                    node[col][row].setAsCheckedPlayer1();
+                }else if(player==2){
+                    node[col][row].setAsCheckedPlayer2();
+                }
+                position = new DomineeringPosition();
+                ((DomineeringPosition) position).board[col][row]=player;
+                if(player==1){
+                    player1turn=false;
+                }else{
+                    player1turn=true;
+                }
+            }
+        }catch(IOException e){
+            e.printStackTrace();
         }
     }
 
@@ -201,11 +253,15 @@ public class DemoPanel extends JFrame {
         int col = currentNode.col;
         int row = currentNode.row;
         if(player1turn){
-            node[col][row].setBackground(Color.WHITE);
-            node[col][row+1].setBackground(Color.WHITE);
+            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked && !node[col][row + 1].checked) {
+                node[col][row].setBackground(Color.WHITE);
+                node[col][row+1].setBackground(Color.WHITE);
+            }
         }else{
-            node[col][row].setBackground(Color.WHITE);
-            node[col+1][row].setBackground(Color.WHITE);
+            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked && !node[col][row + 1].checked) {
+                node[col][row].setBackground(Color.WHITE);
+                node[col+1][row].setBackground(Color.WHITE);
+            }
         }
     }
 
