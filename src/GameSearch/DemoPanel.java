@@ -22,6 +22,7 @@ public class DemoPanel extends JFrame {
     final int nodeSize = 80;
     final int screenWidth = nodeSize * maxCol;
     final int screenHeight = nodeSize * maxRow;
+    public boolean hint=false;
 
     Node[][] node = new Node[maxCol][maxRow];
     private JComboBox<String> levelComboBox;
@@ -141,7 +142,9 @@ public class DemoPanel extends JFrame {
         hintButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showHint(node,player);
+
+                hint=true;
+                clicked=true;
             }
         });
 
@@ -157,6 +160,27 @@ public class DemoPanel extends JFrame {
 
     }
 
+//    public void showHint( Node[][] node, boolean player){
+//        int[][] board = new int[8][8];
+//        for (int i=0; i<8; i++) {
+//            for(int j=0; j<8; j++){
+//                if(node[i][j].checked){
+//                    board[i][j]=DomineeringPosition.HUMAN;
+//                }
+//                else{
+//                    board[i][j]=DomineeringPosition.BLANK;
+//                }
+//            }
+//        }
+//
+//
+//        Vector v = alphaBeta(1, new DomineeringPosition(), player);
+//        Move move = (Move) v.elementAt(1);
+//        int row = move.row1;
+//        int col = move.col1;
+//        node[row][col].setBackground(Color.GREEN);
+//        node[row][col+1].setBackground(Color.GREEN);
+//    }
 
     private void addMouseListenerToNode(Node currentNode) {
         int nodeCol = currentNode.col;
@@ -243,6 +267,10 @@ public class DemoPanel extends JFrame {
                 if (board[i][j]==DomineeringPosition.BLANK){
                     node[i][j].setBackground(Color.WHITE);
                 }
+                if(board[i][j]==DomineeringPosition.Hint){
+                    if(hint){
+                        node[i][j].setBackground(Color.GREEN);
+                    }                }
             }
         }
     }

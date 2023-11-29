@@ -37,7 +37,6 @@ public class Domineering extends GameSearch{
 
     @Override
     public boolean wonPosition(Position p, boolean player) {
-        boolean ret = false;
         DomineeringPosition dp = (DomineeringPosition) p;
         int [][] board = dp.board;
         int place1=0;
@@ -63,11 +62,9 @@ public class Domineering extends GameSearch{
 
         }
         if (player) {
-            if (place2 > 0) return false;
-            return true;
+            return place2 <= 0;
         } else {
-            if (place1 > 0) return false;
-            return true;
+            return place1 <= 0;
 
         }
     }
@@ -77,9 +74,8 @@ public class Domineering extends GameSearch{
     public float positionEvaluation(Position p, boolean player) {
         DomineeringPosition dp = (DomineeringPosition) p;
         int[][] board = dp.board;
-        float base = 1.0f;
-        int countPlayer1 = 0;
-        int countPlayer2=0;
+        int countPlayer1;
+        int countPlayer2;
         float result;
 
 
@@ -253,6 +249,17 @@ public class Domineering extends GameSearch{
 
             dp.clicked = false;
             Move move = dp.move;
+            boolean hint = dp.hint;
+
+            if (hint){
+                DomineeringMove dm = showHintMove(startingPosition, true);
+                makeHighlightedMove(dm,startingPosition);
+                dp.updatePosition(startingPosition);
+                dp.hint = false;
+
+
+                continue;
+            }
 
             startingPosition = makeMove(startingPosition, HUMAN, move);
             dp.updatePosition(startingPosition);
@@ -276,14 +283,21 @@ public class Domineering extends GameSearch{
         }
     }
 
+    private Position makeHighlightedMove(DomineeringMove dm,Position p){
+        DomineeringMove m = dm;
+        DomineeringPosition pos = (DomineeringPosition)p;
+
+        pos.board[m.row][m.col] = DomineeringPosition.Hint;
+        pos.board[m.row2][m.col2] = DomineeringPosition.Hint;
+
+        return pos;
+    }
+
 
     public Position getHintPos(Position position, boolean player){
 
         if(player){
             Vector v = alphaBeta(0, position, HUMAN);
-            position = (Position)v.elementAt(1);
-
-
             position = (Position)v.elementAt(1);
         }else{
 

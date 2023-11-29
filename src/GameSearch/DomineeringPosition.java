@@ -4,6 +4,7 @@ public class DomineeringPosition extends Position{
     final static public int BLANK = 0;
     final static public int HUMAN = 1;
     final static public int PROGRAM = -1;
+    final static public int Hint = 2;
 
     int col=8;
     int row=8;
@@ -21,6 +22,11 @@ public class DomineeringPosition extends Position{
             }
         }
         board=new int[this.col][this.row];
+    }
+    DomineeringPosition(int [][] board){
+        this.col= col;
+        this.row = row;
+        this.board = board;
     }
     DomineeringPosition(){
         for (int i=0; i<col; i++) {
