@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -134,7 +135,8 @@ public class DemoPanel extends JFrame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                saveGridToFile("save.txt");
+                saveGridToFile("grid");
+
             }
         });
         JButton hintButton=new JButton("NEED HELP");
@@ -208,20 +210,46 @@ public class DemoPanel extends JFrame {
 
     }
 
-    private void saveGridToFile(String fileName) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-            for (int i = 0; i < maxCol; i++) {
-                for (int j = 0; j < maxRow; j++) {
-                    Node currentNode = node[i][j];
-                    String nodeString = currentNode.toString(i, j);
-                    writer.newLine();
+    private void saveGridToFile(String baseFileName) {
+        // Ensure the maximum number of grids to save
+        int maxGridsToSave = 4;
+
+        for (int fileIndex = 1; fileIndex <= maxGridsToSave; fileIndex++) {
+            String fileName = baseFileName + "_" + fileIndex + ".txt";
+
+            // Check if the file is empty
+            if (isFileEmpty(fileName)) {
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+                    // Save the grid to the empty file
+                    saveGridContent(writer);
+                    System.out.println("Grid saved to " + fileName);
+                    return;  // Exit the loop if the grid is saved
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
             }
-            System.out.println("Grid saved to " + fileName);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        }
+
+        System.out.println("No empty file found to save the grid.");
+    }
+
+    private boolean isFileEmpty(String fileName) {
+        File file = new File(fileName);
+        return file.length() == 0;
+    }
+
+    private void saveGridContent(BufferedWriter writer) throws IOException {
+        for (int i = 0; i < maxCol; i++) {
+            for (int j = 0; j < maxRow; j++) {
+                Node currentNode = node[i][j];
+                String nodeString = currentNode.toString(i, j);
+                writer.write(nodeString);
+                writer.newLine();
+            }
         }
     }
+
+
 
     private void highlightNode(Node currentNode) {
         int col = currentNode.row;
