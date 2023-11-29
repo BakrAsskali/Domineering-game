@@ -237,11 +237,13 @@ public class DemoPanel extends JFrame {
                 node[row][col + 1].setBackground(Color.ORANGE);
             }
         } else{
-            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked && !node[col][row + 1].checked) {
-                if(player1turn){
+            if(player1turn){
+                if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked) {
                     node[row][col].setBackground(Color.ORANGE);
                     node[row][col + 1].setBackground(Color.ORANGE);
-                }else{
+                }
+            }else{
+                if (row+1 < maxRow && !node[col][row + 1].checked && !node[col][row].checked) {
                     node[row][col].setBackground(Color.ORANGE);
                     node[row+1][col].setBackground(Color.ORANGE);
                 }
@@ -253,12 +255,12 @@ public class DemoPanel extends JFrame {
         int col = currentNode.col;
         int row = currentNode.row;
         if(player1turn){
-            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked && !node[col][row + 1].checked) {
+            if (row+1 < maxRow && !node[col][row + 1].checked && !node[col][row].checked) {
                 node[col][row].setBackground(Color.WHITE);
                 node[col][row+1].setBackground(Color.WHITE);
             }
         }else{
-            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked && !node[col][row + 1].checked) {
+            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked) {
                 node[col][row].setBackground(Color.WHITE);
                 node[col+1][row].setBackground(Color.WHITE);
             }
@@ -271,7 +273,6 @@ public class DemoPanel extends JFrame {
         if(twoPlayer){
             if(player1turn){
                 clickedNode.setAsCheckedPlayer1();
-
                 move = new DomineeringMove((char) (row), col, (char) (row), col + 1);
                 clicked=true;
                 player1turn = false;
@@ -285,7 +286,6 @@ public class DemoPanel extends JFrame {
             clickedNode.setAsCheckedPlayer1();
             move = new DomineeringMove((char) (row), col, (char) (row), col + 1);
             clicked=true;
-            player1turn = false;
         }
     }
 

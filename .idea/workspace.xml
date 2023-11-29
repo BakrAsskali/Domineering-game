@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2a2b5d5-0402-47cc-a8e6-ee2c19f445ec" name="Changes" comment="both game types work">
+    <list default="true" id="a2a2b5d5-0402-47cc-a8e6-ee2c19f445ec" name="Changes" comment="Added loading games">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/grid.txt" beforeDir="false" afterPath="$PROJECT_DIR$/grid.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GameSearch/DemoPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameSearch/DemoPanel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -141,7 +140,8 @@
       <workItem from="1701130428231" duration="12000" />
       <workItem from="1701167120854" duration="646000" />
       <workItem from="1701172380219" duration="8748000" />
-      <workItem from="1701256105996" duration="2355000" />
+      <workItem from="1701256105996" duration="3782000" />
+      <workItem from="1701262951481" duration="581000" />
     </task>
     <task id="LOCAL-00001" summary="Remplacer la méthode  alphaBetaHelper(...) pour tenir compte de la version de la stratégie alpha-beta décrite dans la diapostive 18 du cours. (done)">
       <option name="closed" value="true" />
@@ -223,7 +223,15 @@
       <option name="project" value="LOCAL" />
       <updated>1701257567704</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Added loading games">
+      <option name="closed" value="true" />
+      <created>1701258567999</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1701258567999</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -238,7 +246,8 @@
     <MESSAGE value="Removed redundant code" />
     <MESSAGE value="added player 2" />
     <MESSAGE value="both game types work" />
-    <option name="LAST_COMMIT_MESSAGE" value="both game types work" />
+    <MESSAGE value="Added loading games" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added loading games" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Domineering_game$Domineering.ic" NAME="Domineering Coverage Results" MODIFIED="1700504752029" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
