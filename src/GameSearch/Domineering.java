@@ -1,5 +1,6 @@
 package GameSearch;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -269,6 +270,8 @@ public class Domineering extends GameSearch{
         }
         if (dp.twoPlayer == false) {
             while (true) {
+                dp.hint=false;
+                dp.updatePosition(startingPosition);
                 printPosition(startingPosition);
                 if (wonPosition(startingPosition, PROGRAM)) {
                     System.out.println("Program won");
@@ -278,14 +281,19 @@ public class Domineering extends GameSearch{
                     System.out.println("Human won");
                     break;
                 }
-
-                dp.updatePosition(startingPosition);
-                while (!dp.clicked) {
+                while (!dp.clicked && !dp.hint) {
                     try {
                         Thread.sleep(100); // Adjust the sleep time as needed
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                }
+                if(dp.hint){
+                    dp.hint=false;
+                    startingPosition = showHintMove(startingPosition, PROGRAM);
+                    dp.updatePosition(startingPosition);
+                    printPosition(startingPosition);
+                    continue;
                 }
                 dp.clicked = false;
                 Move move = dp.move;
@@ -306,6 +314,8 @@ public class Domineering extends GameSearch{
             }
         } else {
             while (true) {
+                dp.hint=false;
+                dp.updatePosition(startingPosition);
                 printPosition(startingPosition);
                 if (wonPosition(startingPosition, PROGRAM)) {
                     System.out.println("Program won");
@@ -316,13 +326,18 @@ public class Domineering extends GameSearch{
                     break;
                 }
 
-                dp.updatePosition(startingPosition);
-                while (!dp.clicked) {
+                while (!dp.clicked && !dp.hint) {
                     try {
                         Thread.sleep(100); // Adjust the sleep time as needed
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                }
+                if(dp.hint){
+                    dp.hint=false;
+                    startingPosition = showHintMove(startingPosition, PROGRAM);
+                    dp.updatePosition(startingPosition);
+                    continue;
                 }
                 dp.clicked = false;
                 Move move = dp.move;
@@ -370,6 +385,19 @@ public class Domineering extends GameSearch{
         }
         return pos;
     }
+
+    private Position showHintMove(Position p, boolean player) {
+        DomineeringPosition dp = (DomineeringPosition) p;
+
+        Vector v;
+        if (player) {
+            v = maxValue(10, dp, false, -1000000.0f, 1000000.0f);
+        } else {
+            v = maxValue(10, dp, true, -1000000.0f, 1000000.0f);
+        }
+        return (DomineeringPosition) v.elementAt(1);
+    }
+
 
 
     public static void main(String [] args) {

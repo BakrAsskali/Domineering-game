@@ -1,0 +1,331 @@
+Index: src/GameSearch/DemoPanel.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package GameSearch;\n\nimport javax.swing.*;\nimport java.awt.*;\nimport java.awt.event.ActionEvent;\nimport java.awt.event.ActionListener;\nimport java.awt.event.MouseAdapter;\nimport java.awt.event.MouseEvent;\nimport java.io.BufferedReader;\nimport java.io.BufferedWriter;\nimport java.io.FileWriter;\nimport java.io.IOException;\nimport java.util.Enumeration;\nimport java.util.Vector;\n\npublic class DemoPanel extends JFrame {\n    public Move move;\n    public boolean clicked = false;\n\n    public boolean gameStart = false;\n    final int maxCol = 8;\n    final int maxRow = 8;\n    final int nodeSize = 80;\n    final int screenWidth = nodeSize * maxCol;\n    final int screenHeight = nodeSize * maxRow;\n\n    Node[][] node = new Node[maxCol][maxRow];\n    private JComboBox<String> levelComboBox;\n    private JComboBox<String> playerComboBox;\n\n    public boolean twoPlayer = false;\n\n    public boolean player1turn = true;\n    public DomineeringPosition position;\n    public boolean loadedgame = false;\n\n    public DemoPanel() {\n        initializeUI();\n    }\n\n    private void initializeUI() {\n        this.setPreferredSize(new Dimension(screenWidth, screenHeight));\n        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);\n\n        JPanel buttonPanel = new JPanel();\n        buttonPanel.setLayout(new FlowLayout()); // Use FlowLayout for left-to-right flow\n\n\n        JButton startButton = new JButton(\"Start\");\n        JButton continueButton = new JButton(\"Continue\");\n        JButton quitButton = new JButton(\"Quit\");\n\n\n        startButton.setVerticalAlignment(JLabel.CENTER);\n        startButton.setHorizontalAlignment(JLabel.CENTER);\n\n\n\n\n        // Create and populate the level combo box\n        levelComboBox = new JComboBox<>(new String[]{\"1\", \"2\", \"3\"});\n        levelComboBox.setSelectedIndex(1); // Set the default selected level\n\n        // Create and populate the player combo box\n        playerComboBox = new JComboBox<>(new String[]{\"P1 vs P2\", \"P1 vs Computer\"});\n        playerComboBox.setSelectedIndex(1); // Set the default selected player option\n\n        boolean player = playerComboBox.getSelectedIndex() == 0 ? false : true;\n        int level=levelComboBox.getSelectedIndex()+1;\n\n        ImageIcon img= new ImageIcon(\"img.png\");\n\n        // Add components to the button panel\n        buttonPanel.add(startButton);\n        buttonPanel.add(continueButton);\n        buttonPanel.add(quitButton);\n\n\n\n        this.setResizable(false);\n        this.setIconImage(img.getImage());\n        this.getContentPane().setBackground(Color.BLUE);\n        this.setTitle(\"Welcome to Domineering\");\n\n        startButton.addActionListener(new ActionListener() {\n            @Override\n            public void actionPerformed(ActionEvent e) {\n                gameStart(level, player);\n            }\n        });\n\n        continueButton.addActionListener(new ActionListener() {\n            @Override\n            public void actionPerformed(ActionEvent e) {\n                loadGameFromFile();\n            }\n        });\n\n        quitButton.addActionListener(e -> System.exit(0));\n\n        buttonPanel.add(startButton);\n        buttonPanel.add(continueButton);\n        buttonPanel.add(quitButton);\n        // Add combo boxes to the button panel\n        buttonPanel.add(new JLabel(\"Select Level:\"));\n        buttonPanel.add(levelComboBox);\n        buttonPanel.add(new JLabel(\"Select Players:\"));\n        buttonPanel.add(playerComboBox);\n\n\n        this.add(buttonPanel);\n        this.setVisible(true);\n    }\n\n    private void gameStart(int level, boolean player) {\n        this.getContentPane().removeAll();\n\n        JPanel gamePanel = new JPanel();\n        twoPlayer = playerComboBox.getSelectedIndex() == 0;\n        gamePanel.setPreferredSize(new Dimension(screenWidth, screenHeight));\n        gamePanel.setLayout(new BorderLayout());\n\n        // Create a panel for the node grid\n        JPanel nodeGridPanel = new JPanel(new GridLayout(maxCol, maxRow));\n        for (int i = 0; i < maxCol; i++) {\n            for (int j = 0; j < maxRow; j++) {\n                node[i][j] = new Node(i, j);\n                nodeGridPanel.add(node[i][j]);\n                addMouseListenerToNode(node[i][j]);\n            }\n        }\n\n        // Save Button\n        JButton saveButton = new JButton(\"Save\");\n        saveButton.addActionListener(new ActionListener() {\n            @Override\n            public void actionPerformed(ActionEvent e) {\n                saveGridToFile(); // Replace with your desired file name\n            }\n        });\n\n        // Create a panel for the save button\n        JPanel saveButtonPanel = new JPanel();\n        saveButtonPanel.add(saveButton);\n\n        // Add the node grid panel to the center and save button panel to the bottom of gamePanel\n        gamePanel.add(nodeGridPanel, BorderLayout.CENTER);\n        gamePanel.add(saveButtonPanel, BorderLayout.SOUTH);\n\n        this.add(gamePanel);\n        JButton button=new JButton(\"Save The game\");\n        button.addActionListener(new ActionListener() {\n            @Override\n            public void actionPerformed(ActionEvent e) {\n                saveGridToFile();\n            }\n        });\n        JButton hintButton=new JButton(\"NEED HELP\");\n\n        hintButton.addActionListener(new ActionListener() {\n            @Override\n            public void actionPerformed(ActionEvent e) {\n                showHint(node,player);\n            }\n        });\n\n        add(button, BorderLayout.BEFORE_FIRST_LINE);\n        add(hintButton, BorderLayout.LINE_START);\n\n\n        this.setVisible(true);\n        this.pack();\n        gameStart = true;\n\n\n\n    }\n    private void addMouseListenerToNode(Node currentNode) {\n        int nodeCol = currentNode.col;\n        int nodeRow = currentNode.row;\n\n            currentNode.addMouseListener(new MouseAdapter() {\n                @Override\n                public void mouseEntered(MouseEvent e) {\n                    if (nodeCol + 1 < maxCol && nodeRow+1< maxRow && !node[nodeCol + 1][nodeRow].checked && !node[nodeCol][nodeRow].checked) {\n                        highlightNode(currentNode);\n                    }\n                }\n                @Override\n                public void mouseExited(MouseEvent e) {\n                    if (nodeCol + 1 < maxCol && nodeRow+1< maxRow && !node[nodeCol + 1][nodeRow].checked && !node[nodeCol][nodeRow].checked) {\n                        unhighlightNode(currentNode);\n                    }\n                }\n                @Override\n                public void mouseClicked(MouseEvent e) {\n                        handleClick(currentNode);\n\n                }\n            });\n\n    }\n\n    private void saveGridToFile() {\n        try (BufferedWriter writer = new BufferedWriter(new FileWriter(\"savedGrid.txt\"))) {\n            for (int i = 0; i < maxCol; i++) {\n                for (int j = 0; j < maxRow; j++) {\n                    Node currentNode = node[i][j];\n                    if (currentNode.checked) {\n                        if(currentNode.getBackground()==Color.BLACK){\n                            writer.write(\"1\");\n                        }else{\n                            writer.write(\"2\");\n                        }\n                    } else {\n                        writer.write(\"0\");\n                    }\n                    String nodeString = currentNode.toString(i, j);\n                    writer.write(nodeString);\n                    writer.newLine();\n                }\n            }\n            System.out.println(\"Grid saved to \" + \"savedGrid.txt\");\n        } catch (IOException ex) {\n            ex.printStackTrace();\n        }\n    }\n\n    private void loadGameFromFile() {\n        try(BufferedReader reader=new BufferedReader(new java.io.FileReader(\"savedGrid.txt\"))){\n            String line;\n            while((line=reader.readLine())!=null){\n                String[] parts=line.split(\"\");\n                int player=Integer.parseInt(parts[0]);\n                int row=Integer.parseInt(parts[1]);\n                int col=Integer.parseInt(parts[2]);\n                System.out.println(player+\" \"+row+\" \"+col);\n                if(player==1){\n                    node[row][col] = new Node(row, col);\n                    node[row][col].setAsCheckedPlayer1();\n                }else if(player==2){\n                    node[row][col] = new Node(row, col);\n                    node[row][col].setAsCheckedPlayer2();\n                }\n                position = new DomineeringPosition();\n                position.board[row][col]=player;\n                loadedgame=true;\n            }\n        }catch(IOException e){\n            e.printStackTrace();\n        }\n    }\n\n    private void highlightNode(Node currentNode) {\n        int col = currentNode.row;\n        int row = currentNode.col;\n        if(!twoPlayer) {\n            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked && !node[col][row + 1].checked) {\n                node[row][col].setBackground(Color.ORANGE);\n                node[row][col + 1].setBackground(Color.ORANGE);\n            }\n        } else{\n            if(player1turn){\n                if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked) {\n                    node[row][col].setBackground(Color.ORANGE);\n                    node[row][col + 1].setBackground(Color.ORANGE);\n                }\n            }else{\n                if (row+1 < maxRow && !node[col][row + 1].checked && !node[col][row].checked) {\n                    node[row][col].setBackground(Color.ORANGE);\n                    node[row+1][col].setBackground(Color.ORANGE);\n                }\n            }\n        }\n    }\n\n    private void unhighlightNode(Node currentNode) {\n        int col = currentNode.col;\n        int row = currentNode.row;\n        if(player1turn){\n            if (row+1 < maxRow && !node[col][row + 1].checked && !node[col][row].checked) {\n                node[col][row].setBackground(Color.WHITE);\n                node[col][row+1].setBackground(Color.WHITE);\n            }\n        }else{\n            if (col + 1 < maxCol && !node[col + 1][row].checked && !node[col][row].checked) {\n                node[col][row].setBackground(Color.WHITE);\n                node[col+1][row].setBackground(Color.WHITE);\n            }\n        }\n    }\n\n    private void handleClick(Node clickedNode) {\n        int col = clickedNode.row;\n        int row = clickedNode.col;\n        if(twoPlayer){\n            if(player1turn){\n                clickedNode.setAsCheckedPlayer1();\n                move = new DomineeringMove((char) (row), col, (char) (row), col + 1);\n                clicked=true;\n                player1turn = false;\n            }else{\n                clickedNode.setAsCheckedPlayer2();\n                move = new DomineeringMove((char) (row), col, (char) (row + 1), col);\n                clicked=true;\n                player1turn = true;\n            }\n        }else{\n            clickedNode.setAsCheckedPlayer1();\n            move = new DomineeringMove((char) (row), col, (char) (row), col + 1);\n            clicked=true;\n        }\n    }\n\n    public void updatePosition(Position p){\n        DomineeringPosition dp = (DomineeringPosition) p;\n        int [][] board = dp.board;\n        for (int i=0; i<8; i++) {\n            for(int j=0; j<8; j++){\n                if(board[i][j]==DomineeringPosition.HUMAN){\n                    node[i][j].setAsCheckedPlayer1();\n                }\n                if(board[i][j]==DomineeringPosition.PROGRAM){\n                    node[i][j].setAsCheckedPlayer2();\n                }\n                if (board[i][j]==DomineeringPosition.BLANK){\n                    node[i][j].setBackground(Color.WHITE);\n                }\n            }\n        }\n    }\n\n\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/GameSearch/DemoPanel.java b/src/GameSearch/DemoPanel.java
+--- a/src/GameSearch/DemoPanel.java	(revision 6b40b6f3e0c6cbba434a26287cc23e25ab4b1e97)
++++ b/src/GameSearch/DemoPanel.java	(date 1701289359432)
+@@ -33,6 +33,7 @@
+     public boolean player1turn = true;
+     public DomineeringPosition position;
+     public boolean loadedgame = false;
++    public boolean hint = false;
+ 
+     public DemoPanel() {
+         initializeUI();
+@@ -148,23 +149,17 @@
+         gamePanel.add(saveButtonPanel, BorderLayout.SOUTH);
+ 
+         this.add(gamePanel);
+-        JButton button=new JButton("Save The game");
+-        button.addActionListener(new ActionListener() {
+-            @Override
+-            public void actionPerformed(ActionEvent e) {
+-                saveGridToFile();
+-            }
+-        });
+         JButton hintButton=new JButton("NEED HELP");
+ 
+         hintButton.addActionListener(new ActionListener() {
+             @Override
+             public void actionPerformed(ActionEvent e) {
+-                showHint(node,player);
++                hint=true;
++                clicked=true;
++                player1turn=false;
+             }
+         });
+ 
+-        add(button, BorderLayout.BEFORE_FIRST_LINE);
+         add(hintButton, BorderLayout.LINE_START);
+ 
+ 
+Index: src/GameSearch/Domineering.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package GameSearch;\n\nimport java.awt.*;\nimport java.util.ArrayList;\nimport java.util.Enumeration;\nimport java.util.Vector;\n\npublic class Domineering extends GameSearch{\n\n    @Override\n    public boolean wonPosition(Position p, boolean player) {\n        boolean ret = false;\n        DomineeringPosition dp = (DomineeringPosition) p;\n        int [][] board = dp.board;\n        int place1=0;\n        int place2=0;\n        for (int i=0; i<8; i++) {\n            for (int j = 0; j < 8; j++) {\n                if (board[i][j] == DomineeringPosition.BLANK) {\n                    if (player) {\n                        if (i + 1 < 8 && board[i + 1][j] == DomineeringPosition.BLANK) {\n                            place2++;\n                            break;\n                        }\n\n                    } else {\n                        if (j + 1 < 8 && board[i][j + 1] == DomineeringPosition.BLANK) {\n                            place1++;\n                            break;\n                        }\n                    }\n                }\n\n            }\n\n        }\n        if (player) {\n            if (place2 > 0) return false;\n            return true;\n        } else {\n            if (place1 > 0) return false;\n            return true;\n\n        }\n    }\n\n\n    @Override\n    public float positionEvaluation(Position p, boolean player) {\n        DomineeringPosition dp = (DomineeringPosition) p;\n        int[][] board = dp.board;\n        float base = 1.0f;\n        int countPlayer1 = 0;\n        int countPlayer2=0;\n        float result;\n\n\n        countPlayer1=numberOfHorizontalPos(board);\n        countPlayer2=numberOfVerticalPos(board);\n\n        result=countPlayer1-countPlayer2;\n        if(player){\n            return result;\n        }else {\n            return -result;\n        }\n    }\n    public int numberOfVerticalPos(int[][] board){\n        int ret = 0;\n        for (int i=0; i<8; i++) {\n            for (int j = 0; j < 8; j++) {\n                if (board[i][j] == DomineeringPosition.BLANK) {\n                    if (i + 1 < 8 && board[i+1][j] == DomineeringPosition.BLANK) {\n                        ret++;\n                    }\n                }\n            }\n        }\n        return ret;\n    }\n    public int numberOfHorizontalPos(int[][] board){\n        int ret = 0;\n        for (int i=0; i<8; i++) {\n            for(int j=0; j<8; j++){\n                if(board[i][j] == DomineeringPosition.BLANK) {\n                    if (j+1 < 8 && board[i][j+1] == DomineeringPosition.BLANK) {\n                        ret++;\n                    }\n                }\n            }\n        }\n        return ret;\n    }\n\n    //useless\n    @Override\n    public void printPosition(Position p) {\n        DomineeringPosition dp = (DomineeringPosition) p;\n        int [][] board = dp.board;\n        for (int i=0; i<8; i++) {\n            for(int j=0; j<8; j++){\n                if(board[i][j] == DomineeringPosition.PROGRAM){\n                    System.out.print(\"X\");\n                }else if(board[i][j] == DomineeringPosition.HUMAN){\n                    System.out.print(\"O\");\n                }else{\n                    System.out.print(\".\");\n                }\n            }\n            System.out.println();\n        }\n    }\n\n    @Override\n    public Position[] possibleMoves(Position p, boolean player) {\n        DomineeringPosition dp = (DomineeringPosition) p;\n        int [][] board = dp.board;\n        ArrayList<Position> ret = new ArrayList<>();\n        Position[] ret2 ;\n        for (int i=0; i<8; i++) {\n            for(int j=0; j<8; j++){\n                if(board[i][j] == DomineeringPosition.BLANK){\n                    if(player) {\n                            if (j + 1 < 8 && board[i][j + 1] == DomineeringPosition.BLANK) {\n                                DomineeringPosition pos2 = new DomineeringPosition();\n                                for(int k = 0; k < 8; k++) System.arraycopy(board[k], 0, pos2.board[k], 0, 8);\n                                pos2.board[i][j] = DomineeringPosition.HUMAN;\n                                pos2.board[i][j+1] = DomineeringPosition.HUMAN;\n                                ret.add(pos2);\n                            }\n                        }else {\n                        if (i + 1 < 8 && board[i + 1][j] == DomineeringPosition.BLANK) {\n                            DomineeringPosition pos2 = new DomineeringPosition();\n                            for(int k = 0; k < 8; k++) System.arraycopy(board[k], 0, pos2.board[k], 0, 8);\n                            pos2.board[i][j] = DomineeringPosition.PROGRAM;\n                            pos2.board[i+1][j] = DomineeringPosition.PROGRAM;\n                            ret.add(pos2);\n\n                        }\n                    }\n                    }\n                }\n            }\n\n        ret2 = new Position[ret.size()];\n        ret.toArray(ret2);\n        return ret2;\n    }\n\n    public Position makeMove(Position p, boolean player, Move move) {\n        DomineeringMove m = (DomineeringMove)move;\n        DomineeringPosition pos = (DomineeringPosition)p;\n        int [][] board = pos.board;\n\n\n        if(player){\n            board[m.row][m.col] = DomineeringPosition.HUMAN;\n            board[m.row2][m.col2] = DomineeringPosition.HUMAN;\n        }else{\n            board[m.row][m.col] = DomineeringPosition.PROGRAM;\n            board[m.row2][m.col2] = DomineeringPosition.PROGRAM;\n        }\n        return pos;\n    }\n\n    @Override\n    public boolean reachedMaxDepth(Position p, int depth) {\n        boolean ret = false;\n        if (depth >= 15) return true;\n        return ret;\n    }\n\n    @Override\n    public Move createMove() {\n        return null;\n    }\n\n    public Vector maxValue(int depth, Position p, boolean player, float alpha, float beta) {\n        Vector v = new Vector(2);\n        if (wonPosition(p, PROGRAM)) {\n            v.addElement(new Float(1000000.0f));\n            v.addElement(null);\n            return v;\n        }\n        if (wonPosition(p, HUMAN)) {\n            v.addElement(new Float(-1000000.0f));\n            v.addElement(null);\n            return v;\n        }\n        if (reachedMaxDepth(p, depth)) {\n            float value = positionEvaluation(p, player);\n            v.addElement(new Float(value));\n            v.addElement(null);\n            return v;\n        }\n        float bestValue = -1000000.0f;\n        Position [] moves = possibleMoves(p, player);\n        Position bestPosition = null;\n        for (int i=0; i<moves.length; i++) {\n            Vector v2 = minValue(depth+1, moves[i], !player, alpha, beta);\n            float value = ((Float)v2.elementAt(0)).floatValue();\n            if (value > bestValue) {\n                bestValue = value;\n                bestPosition = moves[i];\n            }\n            if (value > alpha) alpha = value;\n            if (alpha >= beta) break;\n        }\n        v.addElement(new Float(bestValue));\n        v.addElement(bestPosition);\n        return v;\n    }\n\n    public Vector minValue(int depth, Position p, boolean player, float alpha, float beta) {\n        Vector v = new Vector(2);\n        if (wonPosition(p, PROGRAM)) {\n            v.addElement(new Float(1000000.0f));\n            v.addElement(null);\n            return v;\n        }\n        if (wonPosition(p, HUMAN)) {\n            v.addElement(new Float(-1000000.0f));\n            v.addElement(null);\n            return v;\n        }\n        if (reachedMaxDepth(p, depth)) {\n            float value = positionEvaluation(p, player);\n            v.addElement(new Float(value));\n            v.addElement(null);\n            return v;\n        }\n        float bestValue = 1000000.0f;\n        Position [] moves = possibleMoves(p, player);\n        Position bestPosition = null;\n        for (int i=0; i<moves.length; i++) {\n            Vector v2 = maxValue(depth+1, moves[i], !player, alpha, beta);\n            float value = ((Float)v2.elementAt(0)).floatValue();\n            if (value < bestValue) {\n                bestValue = value;\n                bestPosition = moves[i];\n            }\n            if (value < beta) beta = value;\n            if (alpha >= beta) break;\n        }\n        v.addElement(new Float(bestValue));\n        v.addElement(bestPosition);\n        return v;\n    }\n\n    @Override\n    public void playGame(Position startingPosition, boolean humanPlayFirst){\n        DemoPanel dp = new DemoPanel();\n        dp.pack();\n        if(dp.loadedgame){\n            startingPosition = dp.position;\n            dp.updatePosition(startingPosition);\n            dp.loadedgame=false;\n        }\n        if (!humanPlayFirst) {\n            Vector v = alphaBeta(1, startingPosition, PROGRAM);\n            startingPosition = (Position)v.elementAt(1);\n        }\n\n        while(!dp.gameStart){\n            try {\n                Thread.sleep(100); // Adjust the sleep time as needed\n            } catch (InterruptedException e) {\n                e.printStackTrace();\n            }\n        }\n        if (dp.twoPlayer == false) {\n            while (true) {\n                printPosition(startingPosition);\n                if (wonPosition(startingPosition, PROGRAM)) {\n                    System.out.println(\"Program won\");\n                    break;\n                }\n                if (wonPosition(startingPosition, HUMAN)) {\n                    System.out.println(\"Human won\");\n                    break;\n                }\n\n                dp.updatePosition(startingPosition);\n                while (!dp.clicked) {\n                    try {\n                        Thread.sleep(100); // Adjust the sleep time as needed\n                    } catch (InterruptedException e) {\n                        e.printStackTrace();\n                    }\n                }\n                dp.clicked = false;\n                Move move = dp.move;\n\n                startingPosition = makeMove(startingPosition, HUMAN, move);\n                dp.updatePosition(startingPosition);\n                printPosition(startingPosition);\n                if (wonPosition(startingPosition, HUMAN)) {\n                    System.out.println(\"Human won\");\n                    break;\n                }\n                Vector v = maxValue(10, startingPosition, PROGRAM, -1000000.0f, 1000000.0f);\n                Enumeration enum2 = v.elements();\n                while (enum2.hasMoreElements()) {\n                    System.out.println(\" next element: \" + enum2.nextElement());\n                }\n                startingPosition = (Position) v.elementAt(1);\n            }\n        } else {\n            while (true) {\n                printPosition(startingPosition);\n                if (wonPosition(startingPosition, PROGRAM)) {\n                    System.out.println(\"Program won\");\n                    break;\n                }\n                if (wonPosition(startingPosition, HUMAN)) {\n                    System.out.println(\"Human won\");\n                    break;\n                }\n\n                dp.updatePosition(startingPosition);\n                while (!dp.clicked) {\n                    try {\n                        Thread.sleep(100); // Adjust the sleep time as needed\n                    } catch (InterruptedException e) {\n                        e.printStackTrace();\n                    }\n                }\n                dp.clicked = false;\n                Move move = dp.move;\n\n                startingPosition = makeMove(startingPosition, HUMAN, move);\n                dp.updatePosition(startingPosition);\n                printPosition(startingPosition);\n                if (wonPosition(startingPosition, HUMAN)) {\n                    System.out.println(\"player 1 won\");\n                    break;\n                }\n                dp.updatePosition(startingPosition);\n                while (!dp.clicked) {\n                    try {\n                        Thread.sleep(100); // Adjust the sleep time as needed\n                    } catch (InterruptedException e) {\n                        e.printStackTrace();\n                    }\n                }\n                dp.clicked = false;\n                move = dp.move;\n\n                startingPosition = makeMovePlayer2(startingPosition, PROGRAM, move);\n                dp.updatePosition(startingPosition);\n                printPosition(startingPosition);\n                if (wonPosition(startingPosition, PROGRAM)) {\n                    System.out.println(\"player 2 won\");\n                    break;\n                }\n            }\n        }\n    }\n\n    private Position makeMovePlayer2(Position startingPosition, boolean player, Move move) {\n        DomineeringMove m = (DomineeringMove)move;\n        DomineeringPosition pos = (DomineeringPosition)startingPosition;\n        int [][] board = pos.board;\n\n        if(player){\n            board[m.row][m.col] = DomineeringPosition.HUMAN;\n            board[m.row2][m.col2] = DomineeringPosition.HUMAN;\n        }else{\n            board[m.row][m.col] = DomineeringPosition.PROGRAM;\n            board[m.row2][m.col2] = DomineeringPosition.PROGRAM;\n        }\n        return pos;\n    }\n\n    public Position getHintPos(Position position, boolean player){\n\n        if(player){\n            Vector v = alphaBeta(0, position, HUMAN);\n            position = (Position)v.elementAt(1);\n\n\n            position = (Position)v.elementAt(1);\n        }else{\n\n            Vector v = alphaBeta(0, position, PROGRAM);\n            Position p = (Position)v.elementAt(1);\n            position = (Position)v.elementAt(1);\n\n        }\n\n        //return the best move\n        return  position;\n    }\n\n    private DomineeringMove showHintMove(Position p, boolean player){\n        Color blankColor=Color.WHITE;\n        Color hintColor=Color.GREEN;\n\n        DomineeringPosition dp = (DomineeringPosition) p;\n        DomineeringPosition hintPos =(DomineeringPosition) getHintPos(p, player);\n\n        int [][] board1 = dp.board;\n        int [][] board2 = hintPos.board;\n        DomineeringMove dm=new DomineeringMove(-1,-1,-1,-1);\n        //find the difference between two boards\n\n\n        for (int row = 0; row < 8; row++) {\n            for (int col = 0; col < 8; col++) {\n                if (board1[row][col] != board2[row][col]) {\n                    if(dm.col==-1 && dm.row==-1){\n                        dm.col = col;\n                        dm.row = row;\n                    }else {\n                        dm.col2 = col;\n                        dm.row2 = row;\n                    }\n\n                }\n            }\n        }\n\n\n        //highlight the hint\n       return dm;\n\n    }\n\n\n    public static void main(String [] args) {\n//\n        DomineeringPosition dp = new DomineeringPosition();\n\n        for (int i = 0; i < 8; i++) {\n            for (int j = 0; j < 8; j++) {\n                System.out.print(dp.board[i][j] + \"\\t\");\n            }\n            System.out.println(); // Move to the next line after each row\n        }\n\n\n\n        Domineering d = new Domineering();\n\n        d.playGame(dp, true);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/GameSearch/Domineering.java b/src/GameSearch/Domineering.java
+--- a/src/GameSearch/Domineering.java	(revision 6b40b6f3e0c6cbba434a26287cc23e25ab4b1e97)
++++ b/src/GameSearch/Domineering.java	(date 1701289286699)
+@@ -270,6 +270,8 @@
+         }
+         if (dp.twoPlayer == false) {
+             while (true) {
++                dp.hint=false;
++                dp.updatePosition(startingPosition);
+                 printPosition(startingPosition);
+                 if (wonPosition(startingPosition, PROGRAM)) {
+                     System.out.println("Program won");
+@@ -279,15 +281,20 @@
+                     System.out.println("Human won");
+                     break;
+                 }
+-
+-                dp.updatePosition(startingPosition);
+-                while (!dp.clicked) {
++                while (!dp.clicked && !dp.hint) {
+                     try {
+                         Thread.sleep(100); // Adjust the sleep time as needed
+                     } catch (InterruptedException e) {
+                         e.printStackTrace();
+                     }
+                 }
++                if(dp.hint){
++                    dp.hint=false;
++                    startingPosition = showHintMove(startingPosition, PROGRAM);
++                    dp.updatePosition(startingPosition);
++                    printPosition(startingPosition);
++                    continue;
++                }
+                 dp.clicked = false;
+                 Move move = dp.move;
+ 
+@@ -307,6 +314,8 @@
+             }
+         } else {
+             while (true) {
++                dp.hint=false;
++                dp.updatePosition(startingPosition);
+                 printPosition(startingPosition);
+                 if (wonPosition(startingPosition, PROGRAM)) {
+                     System.out.println("Program won");
+@@ -317,14 +326,19 @@
+                     break;
+                 }
+ 
+-                dp.updatePosition(startingPosition);
+-                while (!dp.clicked) {
++                while (!dp.clicked && !dp.hint) {
+                     try {
+                         Thread.sleep(100); // Adjust the sleep time as needed
+                     } catch (InterruptedException e) {
+                         e.printStackTrace();
+                     }
+                 }
++                if(dp.hint){
++                    dp.hint=false;
++                    startingPosition = showHintMove(startingPosition, PROGRAM);
++                    dp.updatePosition(startingPosition);
++                    continue;
++                }
+                 dp.clicked = false;
+                 Move move = dp.move;
+ 
+@@ -372,59 +386,18 @@
+         return pos;
+     }
+ 
+-    public Position getHintPos(Position position, boolean player){
++    private Position showHintMove(Position p, boolean player) {
++        DomineeringPosition dp = (DomineeringPosition) p;
+ 
+-        if(player){
+-            Vector v = alphaBeta(0, position, HUMAN);
+-            position = (Position)v.elementAt(1);
+-
+-
+-            position = (Position)v.elementAt(1);
+-        }else{
+-
+-            Vector v = alphaBeta(0, position, PROGRAM);
+-            Position p = (Position)v.elementAt(1);
+-            position = (Position)v.elementAt(1);
+-
+-        }
+-
+-        //return the best move
+-        return  position;
+-    }
+-
+-    private DomineeringMove showHintMove(Position p, boolean player){
+-        Color blankColor=Color.WHITE;
+-        Color hintColor=Color.GREEN;
+-
+-        DomineeringPosition dp = (DomineeringPosition) p;
+-        DomineeringPosition hintPos =(DomineeringPosition) getHintPos(p, player);
+-
+-        int [][] board1 = dp.board;
+-        int [][] board2 = hintPos.board;
+-        DomineeringMove dm=new DomineeringMove(-1,-1,-1,-1);
+-        //find the difference between two boards
+-
+-
+-        for (int row = 0; row < 8; row++) {
+-            for (int col = 0; col < 8; col++) {
+-                if (board1[row][col] != board2[row][col]) {
+-                    if(dm.col==-1 && dm.row==-1){
+-                        dm.col = col;
+-                        dm.row = row;
+-                    }else {
+-                        dm.col2 = col;
+-                        dm.row2 = row;
+-                    }
+-
+-                }
+-            }
+-        }
++        Vector v;
++        if (player) {
++            v = maxValue(10, dp, false, -1000000.0f, 1000000.0f);
++        } else {
++            v = maxValue(10, dp, true, -1000000.0f, 1000000.0f);
++        }
++        return (DomineeringPosition) v.elementAt(1);
++    }
+ 
+-
+-        //highlight the hint
+-       return dm;
+-
+-    }
+ 
+ 
+     public static void main(String [] args) {
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"a2a2b5d5-0402-47cc-a8e6-ee2c19f445ec\" name=\"Changes\" comment=\"\">\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/GameSearch/DemoPanel.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/GameSearch/DemoPanel.java\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Class\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"GitHubPullRequestSearchHistory\">{\n  &quot;lastFilter&quot;: {\n    &quot;state&quot;: &quot;OPEN&quot;,\n    &quot;assignee&quot;: &quot;BakrAsskali&quot;\n  }\n}</component>\n  <component name=\"GithubProjectSettings\">\n    <option name=\"branchProtectionPatterns\">\n      <list>\n        <option value=\"main\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"GithubPullRequestsUISettings\">\n    <option name=\"selectedUrlAndAccountId\">\n      <UrlAndAccount>\n        <option name=\"accountId\" value=\"30e4b3e0-4996-4164-bf79-6206140c3466\" />\n        <option name=\"url\" value=\"https://github.com/BakrAsskali/Domineering-game.git\" />\n      </UrlAndAccount>\n    </option>\n  </component>\n  <component name=\"MarkdownSettingsMigration\">\n    <option name=\"stateVersion\" value=\"1\" />\n  </component>\n  <component name=\"ProblemsViewState\">\n    <option name=\"selectedTabId\" value=\"CurrentFile\" />\n  </component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 4\n}</component>\n  <component name=\"ProjectId\" id=\"2YGhEpkTOe9AKXzXPjGZ0wpIxfp\" />\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\">\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\n  </component>\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">{\n  &quot;keyToString&quot;: {\n    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,\n    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,\n    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,\n    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,\n    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,\n    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\n    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,\n    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,\n    &quot;git-widget-placeholder&quot;: &quot;main&quot;,\n    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\n    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\n  }\n}</component>\n  <component name=\"RecentsManager\">\n    <key name=\"MoveClassesOrPackagesDialog.RECENTS_KEY\">\n      <recent name=\"GameSearch\" />\n    </key>\n  </component>\n  <component name=\"RunManager\">\n    <configuration name=\"Domineering\" type=\"Application\" factoryName=\"Application\" temporary=\"true\" nameIsGenerated=\"true\">\n      <option name=\"MAIN_CLASS_NAME\" value=\"GameSearch.Domineering\" />\n      <module name=\"DomineeringAiGame\" />\n      <extension name=\"coverage\">\n        <pattern>\n          <option name=\"PATTERN\" value=\"GameSearch.*\" />\n          <option name=\"ENABLED\" value=\"true\" />\n        </pattern>\n      </extension>\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <recent_temporary>\n      <list>\n        <item itemvalue=\"Application.Domineering\" />\n      </list>\n    </recent_temporary>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"a2a2b5d5-0402-47cc-a8e6-ee2c19f445ec\" name=\"Changes\" comment=\"\" />\n      <created>1700157720714</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1700157720714</updated>\n      <workItem from=\"1700157721319\" duration=\"567000\" />\n      <workItem from=\"1700318257111\" duration=\"819000\" />\n      <workItem from=\"1700389422548\" duration=\"2138000\" />\n      <workItem from=\"1700420846996\" duration=\"13000\" />\n      <workItem from=\"1700470584359\" duration=\"5000\" />\n      <workItem from=\"1700476997990\" duration=\"1120000\" />\n      <workItem from=\"1700494334852\" duration=\"101000\" />\n      <workItem from=\"1700494447111\" duration=\"1075000\" />\n      <workItem from=\"1700503268274\" duration=\"3230000\" />\n      <workItem from=\"1700560050194\" duration=\"405000\" />\n      <workItem from=\"1700644857141\" duration=\"16000\" />\n      <workItem from=\"1700730375822\" duration=\"615000\" />\n      <workItem from=\"1700741575812\" duration=\"9093000\" />\n      <workItem from=\"1700814341101\" duration=\"2500000\" />\n      <workItem from=\"1700816853479\" duration=\"1617000\" />\n      <workItem from=\"1700832886002\" duration=\"2295000\" />\n      <workItem from=\"1700852825050\" duration=\"412000\" />\n      <workItem from=\"1700903354197\" duration=\"159000\" />\n      <workItem from=\"1700994676282\" duration=\"176000\" />\n      <workItem from=\"1700998669906\" duration=\"1899000\" />\n      <workItem from=\"1701112623429\" duration=\"12819000\" />\n      <workItem from=\"1701130428231\" duration=\"12000\" />\n      <workItem from=\"1701167120854\" duration=\"646000\" />\n      <workItem from=\"1701172380219\" duration=\"8748000\" />\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"Remplacer la méthode  alphaBetaHelper(...) pour tenir compte de la version de la stratégie alpha-beta décrite dans la diapostive 18 du cours. (done)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1700495498342</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1700495498342</updated>\n    </task>\n    <task id=\"LOCAL-00002\" summary=\"Added a page in the UI\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1700560417695</created>\n      <option name=\"number\" value=\"00002\" />\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1700560417695</updated>\n    </task>\n    <task id=\"LOCAL-00003\" summary=\"Added a page in the UI\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1700743180076</created>\n      <option name=\"number\" value=\"00003\" />\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1700743180076</updated>\n    </task>\n    <task id=\"LOCAL-00004\" summary=\"Added a page in the UI\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1700753049101</created>\n      <option name=\"number\" value=\"00004\" />\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1700753049101</updated>\n    </task>\n    <task id=\"LOCAL-00005\" summary=\"Added making moves from the UI,now I need to update the board so that it shows in the UI\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1700819592452</created>\n      <option name=\"number\" value=\"00005\" />\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1700819592452</updated>\n    </task>\n    <task id=\"LOCAL-00006\" summary=\"Need to do some bug fixing but overall I can print the position in the UI\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1700834254557</created>\n      <option name=\"number\" value=\"00006\" />\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1700834254557</updated>\n    </task>\n    <task id=\"LOCAL-00007\" summary=\"fixed the vertical highlight\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1700853207248</created>\n      <option name=\"number\" value=\"00007\" />\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1700853207248</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"8\" />\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <MESSAGE value=\"Remplacer la méthode  alphaBetaHelper(...) pour tenir compte de la version de la stratégie alpha-beta décrite dans la diapostive 18 du cours. (done)\" />\n    <MESSAGE value=\"Added a page in the UI\" />\n    <MESSAGE value=\"Added making moves from the UI,now I need to update the board so that it shows in the UI\" />\n    <MESSAGE value=\"Need to do some bug fixing but overall I can print the position in the UI\" />\n    <MESSAGE value=\"fixed the vertical highlight\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"fixed the vertical highlight\" />\n  </component>\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\n    <SUITE FILE_PATH=\"coverage/Domineering_game$Domineering.ic\" NAME=\"Domineering Coverage Results\" MODIFIED=\"1700504752029\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"idea\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\">\n      <FILTER>GameSearch.*</FILTER>\n    </SUITE>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 6b40b6f3e0c6cbba434a26287cc23e25ab4b1e97)
++++ b/.idea/workspace.xml	(date 1701289286807)
+@@ -6,7 +6,9 @@
+   <component name="ChangeListManager">
+     <list default="true" id="a2a2b5d5-0402-47cc-a8e6-ee2c19f445ec" name="Changes" comment="">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/savedGrid.txt" beforeDir="false" afterPath="$PROJECT_DIR$/savedGrid.txt" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/src/GameSearch/DemoPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameSearch/DemoPanel.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/GameSearch/Domineering.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameSearch/Domineering.java" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -61,28 +63,28 @@
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent">{
+-  &quot;keyToString&quot;: {
+-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+-    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
+-    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
+-    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
+-    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
+-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
++  <component name="PropertiesComponent"><![CDATA[{
++  "keyToString": {
++    "ASKED_ADD_EXTERNAL_FILES": "true",
++    "Downloaded.Files.Path.Enabled": "false",
++    "Repository.Attach.Annotations": "false",
++    "Repository.Attach.JavaDocs": "false",
++    "Repository.Attach.Sources": "false",
++    "RunOnceActivity.OpenProjectViewOnStart": "true",
++    "RunOnceActivity.ShowReadmeOnStart": "true",
++    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
++    "WebServerToolWindowFactoryState": "false",
++    "git-widget-placeholder": "mymaiin",
++    "kotlin-language-version-configured": "true",
++    "node.js.detected.package.eslint": "true",
++    "node.js.detected.package.tslint": "true",
++    "node.js.selected.package.eslint": "(autodetect)",
++    "node.js.selected.package.tslint": "(autodetect)",
++    "nodejs_package_manager_path": "npm",
++    "settings.editor.selected.configurable": "preferences.pluginManager",
++    "vue.rearranger.settings.migration": "true"
+   }
+-}</component>
++}]]></component>
+   <component name="RecentsManager">
+     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+       <recent name="GameSearch" />
+@@ -210,6 +212,32 @@
+     <MESSAGE value="Need to do some bug fixing but overall I can print the position in the UI" />
+     <MESSAGE value="fixed the vertical highlight" />
+     <option name="LAST_COMMIT_MESSAGE" value="fixed the vertical highlight" />
++  </component>
++  <component name="XDebuggerManager">
++    <breakpoint-manager>
++      <breakpoints>
++        <line-breakpoint enabled="true" type="java-line">
++          <url>file://$PROJECT_DIR$/src/GameSearch/Domineering.java</url>
++          <line>339</line>
++          <option name="timeStamp" value="10" />
++        </line-breakpoint>
++        <line-breakpoint enabled="true" type="java-line">
++          <url>file://$PROJECT_DIR$/src/GameSearch/Domineering.java</url>
++          <line>290</line>
++          <option name="timeStamp" value="13" />
++        </line-breakpoint>
++        <line-breakpoint enabled="true" type="java-line">
++          <url>file://$PROJECT_DIR$/src/GameSearch/Domineering.java</url>
++          <line>295</line>
++          <option name="timeStamp" value="42" />
++        </line-breakpoint>
++        <line-breakpoint enabled="true" type="java-line">
++          <url>file://$PROJECT_DIR$/src/GameSearch/Domineering.java</url>
++          <line>283</line>
++          <option name="timeStamp" value="45" />
++        </line-breakpoint>
++      </breakpoints>
++    </breakpoint-manager>
+   </component>
+   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+     <SUITE FILE_PATH="coverage/Domineering_game$Domineering.ic" NAME="Domineering Coverage Results" MODIFIED="1700504752029" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+Index: savedGrid.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>000\n201\n002\n003\n004\n005\n006\n007\n210\n211\n112\n113\n014\n115\n116\n017\n220\n021\n022\n023\n024\n025\n026\n027\n030\n031\n032\n033\n034\n035\n036\n037\n040\n041\n042\n043\n044\n045\n046\n047\n050\n051\n052\n053\n054\n055\n056\n057\n060\n061\n062\n063\n064\n065\n066\n067\n070\n071\n072\n073\n074\n075\n076\n077\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/savedGrid.txt b/savedGrid.txt
+--- a/savedGrid.txt	(revision 6b40b6f3e0c6cbba434a26287cc23e25ab4b1e97)
++++ b/savedGrid.txt	(date 1701287895292)
+@@ -1,20 +1,20 @@
+ 000
+-201
++001
+ 002
+ 003
+ 004
+ 005
+ 006
+ 007
+-210
+-211
+-112
+-113
++010
++011
++012
++013
+ 014
+-115
+-116
++015
++016
+ 017
+-220
++020
+ 021
+ 022
+ 023

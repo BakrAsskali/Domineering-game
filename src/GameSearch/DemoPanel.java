@@ -10,6 +10,8 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Vector;
 
 public class DemoPanel extends JFrame {
     public Move move;
@@ -31,6 +33,7 @@ public class DemoPanel extends JFrame {
     public boolean player1turn = true;
     public DomineeringPosition position;
     public boolean loadedgame = false;
+    public boolean hint = false;
 
     public DemoPanel() {
         initializeUI();
@@ -146,14 +149,20 @@ public class DemoPanel extends JFrame {
         gamePanel.add(saveButtonPanel, BorderLayout.SOUTH);
 
         this.add(gamePanel);
-        JButton button=new JButton("Save The game");
-        button.addActionListener(new ActionListener() {
+        JButton hintButton=new JButton("NEED HELP");
+
+        hintButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                saveGridToFile();
+                hint=true;
+                clicked=true;
+                player1turn=false;
             }
         });
-        this.add(button,BorderLayout.NORTH);
+
+        add(hintButton, BorderLayout.LINE_START);
+
+
         this.setVisible(true);
         this.pack();
         gameStart = true;
@@ -161,7 +170,6 @@ public class DemoPanel extends JFrame {
 
 
     }
-
     private void addMouseListenerToNode(Node currentNode) {
         int nodeCol = currentNode.col;
         int nodeRow = currentNode.row;
@@ -317,10 +325,5 @@ public class DemoPanel extends JFrame {
         }
     }
 
-    private void showHint(){
-        Color blankColor=Color.WHITE;
-        Color hintColor=Color.GREEN;
 
-
-    }
 }
