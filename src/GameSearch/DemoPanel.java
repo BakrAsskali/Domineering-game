@@ -33,6 +33,7 @@ public class DemoPanel extends JFrame {
     public boolean player1turn = true;
     public DomineeringPosition position;
     public boolean loadedgame = false;
+    public boolean hint = false;
 
     public DemoPanel() {
         initializeUI();
@@ -148,23 +149,17 @@ public class DemoPanel extends JFrame {
         gamePanel.add(saveButtonPanel, BorderLayout.SOUTH);
 
         this.add(gamePanel);
-        JButton button=new JButton("Save The game");
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                saveGridToFile();
-            }
-        });
         JButton hintButton=new JButton("NEED HELP");
 
         hintButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showHint(node,player);
+                hint=true;
+                clicked=true;
+                player1turn=false;
             }
         });
 
-        add(button, BorderLayout.BEFORE_FIRST_LINE);
         add(hintButton, BorderLayout.LINE_START);
 
 

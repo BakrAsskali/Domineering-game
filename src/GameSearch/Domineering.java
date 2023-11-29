@@ -270,6 +270,8 @@ public class Domineering extends GameSearch{
         }
         if (dp.twoPlayer == false) {
             while (true) {
+                dp.hint=false;
+                dp.updatePosition(startingPosition);
                 printPosition(startingPosition);
                 if (wonPosition(startingPosition, PROGRAM)) {
                     System.out.println("Program won");
@@ -279,14 +281,19 @@ public class Domineering extends GameSearch{
                     System.out.println("Human won");
                     break;
                 }
-
-                dp.updatePosition(startingPosition);
-                while (!dp.clicked) {
+                while (!dp.clicked && !dp.hint) {
                     try {
                         Thread.sleep(100); // Adjust the sleep time as needed
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                }
+                if(dp.hint){
+                    dp.hint=false;
+                    startingPosition = showHintMove(startingPosition, PROGRAM);
+                    dp.updatePosition(startingPosition);
+                    printPosition(startingPosition);
+                    continue;
                 }
                 dp.clicked = false;
                 Move move = dp.move;
@@ -307,6 +314,8 @@ public class Domineering extends GameSearch{
             }
         } else {
             while (true) {
+                dp.hint=false;
+                dp.updatePosition(startingPosition);
                 printPosition(startingPosition);
                 if (wonPosition(startingPosition, PROGRAM)) {
                     System.out.println("Program won");
@@ -317,13 +326,18 @@ public class Domineering extends GameSearch{
                     break;
                 }
 
-                dp.updatePosition(startingPosition);
-                while (!dp.clicked) {
+                while (!dp.clicked && !dp.hint) {
                     try {
                         Thread.sleep(100); // Adjust the sleep time as needed
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                }
+                if(dp.hint){
+                    dp.hint=false;
+                    startingPosition = showHintMove(startingPosition, PROGRAM);
+                    dp.updatePosition(startingPosition);
+                    continue;
                 }
                 dp.clicked = false;
                 Move move = dp.move;
@@ -372,59 +386,18 @@ public class Domineering extends GameSearch{
         return pos;
     }
 
-    public Position getHintPos(Position position, boolean player){
-
-        if(player){
-            Vector v = alphaBeta(0, position, HUMAN);
-            position = (Position)v.elementAt(1);
-
-
-            position = (Position)v.elementAt(1);
-        }else{
-
-            Vector v = alphaBeta(0, position, PROGRAM);
-            Position p = (Position)v.elementAt(1);
-            position = (Position)v.elementAt(1);
-
-        }
-
-        //return the best move
-        return  position;
-    }
-
-    private DomineeringMove showHintMove(Position p, boolean player){
-        Color blankColor=Color.WHITE;
-        Color hintColor=Color.GREEN;
-
+    private Position showHintMove(Position p, boolean player) {
         DomineeringPosition dp = (DomineeringPosition) p;
-        DomineeringPosition hintPos =(DomineeringPosition) getHintPos(p, player);
 
-        int [][] board1 = dp.board;
-        int [][] board2 = hintPos.board;
-        DomineeringMove dm=new DomineeringMove(-1,-1,-1,-1);
-        //find the difference between two boards
-
-
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                if (board1[row][col] != board2[row][col]) {
-                    if(dm.col==-1 && dm.row==-1){
-                        dm.col = col;
-                        dm.row = row;
-                    }else {
-                        dm.col2 = col;
-                        dm.row2 = row;
-                    }
-
-                }
-            }
+        Vector v;
+        if (player) {
+            v = maxValue(10, dp, false, -1000000.0f, 1000000.0f);
+        } else {
+            v = maxValue(10, dp, true, -1000000.0f, 1000000.0f);
         }
-
-
-        //highlight the hint
-       return dm;
-
+        return (DomineeringPosition) v.elementAt(1);
     }
+
 
 
     public static void main(String [] args) {
