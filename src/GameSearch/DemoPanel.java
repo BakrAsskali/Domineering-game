@@ -34,8 +34,8 @@ public class DemoPanel extends JFrame {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout()); // Use FlowLayout for left-to-right flow
+
+
 
 
         JButton startButton = new JButton("Start");
@@ -62,13 +62,37 @@ public class DemoPanel extends JFrame {
 
         ImageIcon img= new ImageIcon("img.png");
 
-        // Add components to the button panel
-        buttonPanel.add(startButton);
-        buttonPanel.add(continueButton);
-        buttonPanel.add(quitButton);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout());
+        // Create and set layout manager
+        JPanel mainPanel = new JPanel(new GridLayout(4, 1));
+        JPanel zeroRowPanel = new JPanel(new FlowLayout());
+        JPanel firstRowPanel = new JPanel(new FlowLayout());
+        JPanel secondRowPanel = new JPanel(new FlowLayout());
+        JPanel thirdRowPanel = new JPanel(new FlowLayout());
+// Use FlowLayout for left-to-right flow
+
+
+        zeroRowPanel.add(new JLabel("Select Level:"));
+        zeroRowPanel.add(levelComboBox);
+        // Add combo boxes to the button panel
+
+        firstRowPanel.add(new JLabel("Select Players:"));
+        firstRowPanel.add(playerComboBox);
+
+        secondRowPanel.add(startButton);
+        secondRowPanel.add(continueButton);
+
+        thirdRowPanel.add(quitButton);
+
+        mainPanel.add(zeroRowPanel);
+        mainPanel.add(firstRowPanel);
+        mainPanel.add(secondRowPanel);
+        mainPanel.add(thirdRowPanel);
 
 
 
+//Grid layou + JPANEL +++
         this.setResizable(false);
         this.setIconImage(img.getImage());
         this.getContentPane().setBackground(Color.BLUE);
@@ -80,17 +104,9 @@ public class DemoPanel extends JFrame {
 
         quitButton.addActionListener(e -> System.exit(0));
 
-        buttonPanel.add(startButton);
-        buttonPanel.add(continueButton);
-        buttonPanel.add(quitButton);
-        // Add combo boxes to the button panel
-        buttonPanel.add(new JLabel("Select Level:"));
-        buttonPanel.add(levelComboBox);
-        buttonPanel.add(new JLabel("Select Players:"));
-        buttonPanel.add(playerComboBox);
 
 
-        this.add(buttonPanel);
+        this.add(mainPanel);
         this.setVisible(true);
     }
 

@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a2a2b5d5-0402-47cc-a8e6-ee2c19f445ec" name="Changes" comment="" />
+    <list default="true" id="a2a2b5d5-0402-47cc-a8e6-ee2c19f445ec" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GameSearch/DemoPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameSearch/DemoPanel.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -139,6 +142,8 @@
       <workItem from="1701172380219" duration="8748000" />
       <workItem from="1701284917634" duration="11378000" />
       <workItem from="1701299636204" duration="291000" />
+      <workItem from="1701341764974" duration="405000" />
+      <workItem from="1701344896547" duration="1823000" />
     </task>
     <task id="LOCAL-00001" summary="Remplacer la méthode  alphaBetaHelper(...) pour tenir compte de la version de la stratégie alpha-beta décrite dans la diapostive 18 du cours. (done)">
       <option name="closed" value="true" />
