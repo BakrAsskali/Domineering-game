@@ -173,18 +173,18 @@ public class Domineering extends GameSearch{
     public Vector maxValue(int depth, Position p, boolean player, float alpha, float beta) {
         Vector v = new Vector(2);
         if (wonPosition(p, PROGRAM)) {
-            v.addElement(new Float(1000000.0f));
+            v.addElement(1000000.0f);
             v.addElement(null);
             return v;
         }
         if (wonPosition(p, HUMAN)) {
-            v.addElement(new Float(-1000000.0f));
+            v.addElement(-1000000.0f);
             v.addElement(null);
             return v;
         }
         if (reachedMaxDepth(p, depth)) {
             float value = positionEvaluation(p, player);
-            v.addElement(new Float(value));
+            v.addElement(value);
             v.addElement(null);
             return v;
         }
@@ -193,7 +193,7 @@ public class Domineering extends GameSearch{
         Position bestPosition = null;
         for (int i=0; i<moves.length; i++) {
             Vector v2 = minValue(depth+1, moves[i], !player, alpha, beta);
-            float value = ((Float)v2.elementAt(0)).floatValue();
+            float value = (Float) v2.elementAt(0);
             if (value > bestValue) {
                 bestValue = value;
                 bestPosition = moves[i];
@@ -201,7 +201,7 @@ public class Domineering extends GameSearch{
             if (value > alpha) alpha = value;
             if (alpha >= beta) break;
         }
-        v.addElement(new Float(bestValue));
+        v.addElement(bestValue);
         v.addElement(bestPosition);
         return v;
     }
@@ -209,7 +209,7 @@ public class Domineering extends GameSearch{
     public Vector minValue(int depth, Position p, boolean player, float alpha, float beta) {
         Vector v = new Vector(2);
         if (wonPosition(p, PROGRAM)) {
-            v.addElement(new Float(1000000.0f));
+            v.addElement(1000000.0f);
             v.addElement(null);
             return v;
         }
@@ -220,7 +220,7 @@ public class Domineering extends GameSearch{
         }
         if (reachedMaxDepth(p, depth)) {
             float value = positionEvaluation(p, player);
-            v.addElement(new Float(value));
+            v.addElement(value);
             v.addElement(null);
             return v;
         }
@@ -229,7 +229,7 @@ public class Domineering extends GameSearch{
         Position bestPosition = null;
         for (int i=0; i<moves.length; i++) {
             Vector v2 = maxValue(depth+1, moves[i], !player, alpha, beta);
-            float value = ((Float)v2.elementAt(0)).floatValue();
+            float value = (Float) v2.elementAt(0);
             if (value < bestValue) {
                 bestValue = value;
                 bestPosition = moves[i];
@@ -237,7 +237,7 @@ public class Domineering extends GameSearch{
             if (value < beta) beta = value;
             if (alpha >= beta) break;
         }
-        v.addElement(new Float(bestValue));
+        v.addElement(bestValue);
         v.addElement(bestPosition);
         return v;
     }
@@ -263,7 +263,7 @@ public class Domineering extends GameSearch{
                 e.printStackTrace();
             }
         }
-        if (dp.twoPlayer == false) {
+        if (!dp.twoPlayer) {
             while (true) {
                 dp.hint=false;
                 dp.updatePosition(startingPosition);
@@ -300,7 +300,9 @@ public class Domineering extends GameSearch{
                 dp.updatePosition(startingPosition);
                 printPosition(startingPosition);
                 if (wonPosition(startingPosition, HUMAN)) {
+
                     System.out.println("Human won");
+
                     break;
                 }
                 Vector v;
@@ -380,14 +382,12 @@ public class Domineering extends GameSearch{
       }
     }
 
-    private Position makeHighlightedMove(DomineeringMove dm,Position p){
-        DomineeringMove m = dm;
+    private void makeHighlightedMove(DomineeringMove m, Position p){
         DomineeringPosition pos = (DomineeringPosition)p;
 
         pos.board[m.row][m.col] = DomineeringPosition.Hint;
         pos.board[m.row2][m.col2] = DomineeringPosition.Hint;
 
-        return pos;
     }
 
     private Position makeMovePlayer2(Position startingPosition, boolean player, Move move) {
@@ -413,7 +413,6 @@ public class Domineering extends GameSearch{
         }else{
 
             Vector v = minValue(10, position, PROGRAM, 1000000.0f, -1000000.0f);
-            Position p = (Position)v.elementAt(1);
             position = (Position)v.elementAt(1);
 
         }
@@ -423,8 +422,6 @@ public class Domineering extends GameSearch{
     }
 
     private DomineeringMove showHintMove(Position p, boolean player){
-        Color blankColor=Color.WHITE;
-        Color hintColor=Color.GREEN;
 
         DomineeringPosition dp = (DomineeringPosition) p;
         DomineeringPosition hintPos =(DomineeringPosition) getHintPos(p, player);
