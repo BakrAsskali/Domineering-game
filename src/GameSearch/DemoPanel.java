@@ -34,6 +34,7 @@ public class DemoPanel extends JFrame {
     public DomineeringPosition position;
     public boolean loadedgame = false;
     public boolean hint = false;
+    public int level;
 
     public DemoPanel() {
         initializeUI();
@@ -59,15 +60,14 @@ public class DemoPanel extends JFrame {
 
 
         // Create and populate the level combo box
-        levelComboBox = new JComboBox<>(new String[]{"1", "2", "3"});
-        levelComboBox.setSelectedIndex(1); // Set the default selected level
+        levelComboBox = new JComboBox<>(new String[]{"1", "2"});
+        levelComboBox.setSelectedIndex(0); // Set the default selected level
 
         // Create and populate the player combo box
         playerComboBox = new JComboBox<>(new String[]{"P1 vs P2", "P1 vs Computer"});
         playerComboBox.setSelectedIndex(1); // Set the default selected player option
 
         boolean player = playerComboBox.getSelectedIndex() == 0 ? false : true;
-        int level=levelComboBox.getSelectedIndex()+1;
 
         ImageIcon img= new ImageIcon("img.png");
 
@@ -86,6 +86,7 @@ public class DemoPanel extends JFrame {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                level=levelComboBox.getSelectedIndex()+1;
                 gameStart(level, player);
             }
         });

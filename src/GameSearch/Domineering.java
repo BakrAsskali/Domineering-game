@@ -305,7 +305,13 @@ public class Domineering extends GameSearch{
                     System.out.println("Human won");
                     break;
                 }
-                Vector v = maxValue(10, startingPosition, PROGRAM, -1000000.0f, 1000000.0f);
+                Vector v;
+                if (dp.level==2){
+                    v = alphaBeta(10, startingPosition, PROGRAM);
+                }
+                else {
+                    v = maxValue(10, startingPosition, PROGRAM, -1000000.0f, 1000000.0f);
+                }
                 Enumeration enum2 = v.elements();
                 while (enum2.hasMoreElements()) {
                     System.out.println(" next element: " + enum2.nextElement());
