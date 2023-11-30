@@ -37,9 +37,11 @@ public class DemoPanel extends JFrame {
     public boolean hint = false;
     public int level;
     public int LoadIndex;
+    public boolean isGameFinished=false;
 
     public DemoPanel() {
         initializeUI();
+
     }
 
     private void initializeUI() {
@@ -148,7 +150,6 @@ public class DemoPanel extends JFrame {
 
 
     }
-
     private void gameStart(int level, boolean player) {
         this.getContentPane().removeAll();
 
@@ -381,6 +382,7 @@ public class DemoPanel extends JFrame {
             }
         }
     }
+
 
 
 }

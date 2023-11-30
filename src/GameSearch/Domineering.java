@@ -170,7 +170,6 @@ public class Domineering extends GameSearch{
     public Move createMove() {
         return null;
     }
-
     public Vector maxValue(int depth, Position p, boolean player, float alpha, float beta) {
         Vector v = new Vector(2);
         if (wonPosition(p, PROGRAM)) {
@@ -247,11 +246,11 @@ public class Domineering extends GameSearch{
     public void playGame(Position startingPosition, boolean humanPlayFirst){
         DemoPanel dp = new DemoPanel();
         dp.pack();
-//        if(dp.loadedgame){
-//            startingPosition = dp.position;
-//            dp.updatePosition(startingPosition);
-//            dp.loadedgame=false;
-//        }
+        if(dp.loadedgame){
+            startingPosition = dp.position;
+            dp.updatePosition(startingPosition);
+            dp.loadedgame=false;
+        }
         if (!humanPlayFirst) {
             Vector v = alphaBeta(1, startingPosition, PROGRAM);
             startingPosition = (Position)v.elementAt(1);
@@ -293,7 +292,6 @@ public class Domineering extends GameSearch{
                     makeHighlightedMove(dm,startingPosition);
                     dp.updatePosition(startingPosition);
                     dp.hint = false;
-
 
                     continue;
                 }
@@ -414,7 +412,7 @@ public class Domineering extends GameSearch{
             position = (Position)v.elementAt(1);
         }else{
 
-            Vector v = minValue(5, position, PROGRAM, 1000000.0f, -1000000.0f);
+            Vector v = minValue(10, position, PROGRAM, 1000000.0f, -1000000.0f);
             Position p = (Position)v.elementAt(1);
             position = (Position)v.elementAt(1);
 
