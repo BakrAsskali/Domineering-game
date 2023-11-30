@@ -1,17 +1,17 @@
 package GameSearch;
 
+import org.w3c.dom.Text;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.*;
 
 public class DemoPanel extends JFrame {
     public Move move;
@@ -27,6 +27,7 @@ public class DemoPanel extends JFrame {
     Node[][] node = new Node[maxCol][maxRow];
     private JComboBox<String> levelComboBox;
     private JComboBox<String> playerComboBox;
+    private JComboBox<String> loadGameC;
 
     public boolean twoPlayer = false;
 
@@ -35,6 +36,7 @@ public class DemoPanel extends JFrame {
     public boolean loadedgame = false;
     public boolean hint = false;
     public int level;
+    public int LoadIndex;
 
     public DemoPanel() {
         initializeUI();
@@ -53,6 +55,7 @@ public class DemoPanel extends JFrame {
         JButton quitButton = new JButton("Quit");
 
 
+
         startButton.setVerticalAlignment(JLabel.CENTER);
         startButton.setHorizontalAlignment(JLabel.CENTER);
 
@@ -63,6 +66,9 @@ public class DemoPanel extends JFrame {
         levelComboBox = new JComboBox<>(new String[]{"1", "2"});
         levelComboBox.setSelectedIndex(0); // Set the default selected level
 
+        loadGameC = new JComboBox<>(new String[]{"None","Game 1", "Game 2","Game 3","Game 4"});
+        loadGameC.setSelectedIndex(0); // Set the default selected level
+
         // Create and populate the player combo box
         playerComboBox = new JComboBox<>(new String[]{"P1 vs P2", "P1 vs Computer"});
         playerComboBox.setSelectedIndex(1); // Set the default selected player option
@@ -72,9 +78,48 @@ public class DemoPanel extends JFrame {
         ImageIcon img= new ImageIcon("img.png");
 
         // Add components to the button panel
-        buttonPanel.add(startButton);
-        buttonPanel.add(continueButton);
-        buttonPanel.add(quitButton);
+        buttonPanel.setLayout(new FlowLayout());
+        // Create and set layout manager
+        JPanel mainPanel = new JPanel(new GridLayout(5, 1));
+        JPanel beforeZeroRowPanel = new JPanel(new FlowLayout());
+        JPanel zeroRowPanel = new JPanel(new FlowLayout());
+        JPanel firstRowPanel = new JPanel(new FlowLayout());
+        JPanel secondRowPanel = new JPanel(new FlowLayout());
+        JPanel thirdRowPanel = new JPanel(new FlowLayout());
+
+
+        // Use FlowLayout for left-to-right flow
+        mainPanel.setBackground(Color.DARK_GRAY);
+
+        zeroRowPanel.add(new JLabel("Select Level:"));
+        zeroRowPanel.add(levelComboBox);
+        zeroRowPanel.add(new JLabel("Select Game:"));
+        zeroRowPanel.add(loadGameC);
+
+        beforeZeroRowPanel.add(new JLabel("Welcome To Domineering Game:"));
+
+
+
+        // Add combo boxes to the button panel
+
+        firstRowPanel.add(new JLabel("Select Players:"));
+        firstRowPanel.add(playerComboBox);
+
+        secondRowPanel.add(startButton);
+        secondRowPanel.add(continueButton);
+
+        thirdRowPanel.add(quitButton);
+
+        mainPanel.add(beforeZeroRowPanel);
+        mainPanel.add(zeroRowPanel);
+        mainPanel.add(firstRowPanel);
+        mainPanel.add(secondRowPanel);
+        mainPanel.add(thirdRowPanel);
+
+
+
+        this.add(mainPanel);
+        this.setVisible(true);
 
 
 
@@ -94,24 +139,14 @@ public class DemoPanel extends JFrame {
         continueButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                LoadIndex=loadGameC.getSelectedIndex();
                 loadGameFromFile();
             }
         });
 
         quitButton.addActionListener(e -> System.exit(0));
 
-        buttonPanel.add(startButton);
-        buttonPanel.add(continueButton);
-        buttonPanel.add(quitButton);
-        // Add combo boxes to the button panel
-        buttonPanel.add(new JLabel("Select Level:"));
-        buttonPanel.add(levelComboBox);
-        buttonPanel.add(new JLabel("Select Players:"));
-        buttonPanel.add(playerComboBox);
 
-
-        this.add(buttonPanel);
-        this.setVisible(true);
     }
 
     private void gameStart(int level, boolean player) {
@@ -137,7 +172,7 @@ public class DemoPanel extends JFrame {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                saveGridToFile(); // Replace with your desired file name
+              saveGridToFile(); // Replace with your desired file name
             }
         });
 
@@ -147,7 +182,7 @@ public class DemoPanel extends JFrame {
 
         // Add the node grid panel to the center and save button panel to the bottom of gamePanel
         gamePanel.add(nodeGridPanel, BorderLayout.CENTER);
-        gamePanel.add(saveButtonPanel, BorderLayout.SOUTH);
+        gamePanel.add(saveButtonPanel, BorderLayout.BEFORE_FIRST_LINE);
 
         this.add(gamePanel);
         JButton hintButton=new JButton("NEED HELP");
@@ -198,27 +233,43 @@ public class DemoPanel extends JFrame {
     }
 
     private void saveGridToFile() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("savedGrid.txt"))) {
-            for (int i = 0; i < maxCol; i++) {
-                for (int j = 0; j < maxRow; j++) {
-                    Node currentNode = node[i][j];
-                    if (currentNode.checked) {
-                        if(currentNode.getBackground()==Color.BLACK){
-                            writer.write("1");
-                        }else{
-                            writer.write("2");
-                        }
-                    } else {
-                        writer.write("0");
-                    }
-                    String nodeString = currentNode.toString(i, j);
-                    writer.write(nodeString);
-                    writer.newLine();
+        // Ensure the maximum number of grids to save
+        int maxGridsToSave = 4;
+
+        String baseFileName="new";
+
+        for (int fileIndex = 1; fileIndex <= maxGridsToSave; fileIndex++) {
+            String fileName = baseFileName + "_" + fileIndex + ".txt";
+
+            // Check if the file is empty
+            if (isFileEmpty(fileName)) {
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+                    // Save the grid to the empty file
+                    saveGridContent(writer);
+                    System.out.println("Grid saved to " + fileName);
+                    return;  // Exit the loop if the grid is saved
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
             }
-            System.out.println("Grid saved to " + "savedGrid.txt");
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        }
+
+        System.out.println("No empty file found to save the grid.");
+    }
+
+    private boolean isFileEmpty(String fileName) {
+        File file = new File(fileName);
+        return file.length() == 0;
+    }
+
+    private void saveGridContent(BufferedWriter writer) throws IOException {
+        for (int i = 0; i < maxCol; i++) {
+            for (int j = 0; j < maxRow; j++) {
+                Node currentNode = node[i][j];
+                String nodeString = currentNode.toString(i, j);
+                writer.write(nodeString);
+                writer.newLine();
+            }
         }
     }
 

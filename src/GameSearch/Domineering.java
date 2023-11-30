@@ -247,11 +247,11 @@ public class Domineering extends GameSearch{
     public void playGame(Position startingPosition, boolean humanPlayFirst){
         DemoPanel dp = new DemoPanel();
         dp.pack();
-        if(dp.loadedgame){
-            startingPosition = dp.position;
-            dp.updatePosition(startingPosition);
-            dp.loadedgame=false;
-        }
+//        if(dp.loadedgame){
+//            startingPosition = dp.position;
+//            dp.updatePosition(startingPosition);
+//            dp.loadedgame=false;
+//        }
         if (!humanPlayFirst) {
             Vector v = alphaBeta(1, startingPosition, PROGRAM);
             startingPosition = (Position)v.elementAt(1);
@@ -379,7 +379,7 @@ public class Domineering extends GameSearch{
                     break;
                 }
             }
-        }
+      }
     }
 
     private Position makeHighlightedMove(DomineeringMove dm,Position p){
