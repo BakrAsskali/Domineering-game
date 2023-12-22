@@ -69,6 +69,14 @@ public class Domineering extends GameSearch{
         }
     }
 
+    public int degre(Position p) {
+        DomineeringPosition dp = (DomineeringPosition) p;
+        int[][] board = dp.board;
+        int horizontalMoves = numberOfHorizontalPos(board);
+        int verticalMoves = numberOfVerticalPos(board);
+        return horizontalMoves + verticalMoves;
+    }
+
 
     @Override
     public float positionEvaluation(Position p, boolean player) {
@@ -83,6 +91,8 @@ public class Domineering extends GameSearch{
         countPlayer2=numberOfVerticalPos(board);
 
         result=countPlayer1-countPlayer2;
+        float degreValue = degre(p);
+        result += degreValue;
         if(player){
             return result;
         }else {
@@ -96,10 +106,10 @@ public class Domineering extends GameSearch{
                 if (board[i][j] == DomineeringPosition.BLANK) {
                     if (i + 1 < 8 && board[i+1][j] == DomineeringPosition.BLANK) {
                         ret++;
-                    }
-                }
-            }
-        }
+                     }
+                 }
+             }
+         }
         return ret;
     }
     public int numberOfHorizontalPos(int[][] board){
@@ -341,8 +351,12 @@ public class Domineering extends GameSearch{
 
 
         //highlight the hint
+<<<<<<< Updated upstream
        return dm;
 
+=======
+        return dm;
+>>>>>>> Stashed changes
     }
 
 
@@ -365,5 +379,5 @@ public class Domineering extends GameSearch{
         Domineering d = new Domineering();
 
         d.playGame(dp, true);
-    }
-}
+      }
+  }

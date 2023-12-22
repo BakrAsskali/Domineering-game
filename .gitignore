@@ -29,3 +29,11 @@ bin/
 ### Mac OS ###
 .DS_Store
 *.xml
+<<<<<<< Updated upstream
+=======
+*.xml
+.idea/workspace.xml
+*.xml
+*.xml
+*.xml
+>>>>>>> Stashed changes
