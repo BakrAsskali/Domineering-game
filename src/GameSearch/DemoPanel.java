@@ -1,6 +1,5 @@
 package GameSearch;
 
-import org.w3c.dom.Text;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,9 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.*;
-import java.util.Enumeration;
-import java.util.Vector;
-import java.util.*;
+
 
 public class DemoPanel extends JFrame {
     public Move move;
@@ -327,11 +324,11 @@ public class DemoPanel extends JFrame {
                 }
             }
         }
-    Position p = new DomineeringPosition();
-
-        DomineeringPosition dp = (DomineeringPosition) p;
-        dp.board= position.board;
-        updatePosition(p);
+//    Position p = new DomineeringPosition();
+//
+//        DomineeringPosition dp = (DomineeringPosition) p;
+//        dp.board= position.board;
+//        updatePosition(p);
     }
 
     private void unhighlightNode(Node currentNode) {

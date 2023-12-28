@@ -414,7 +414,6 @@ public class Domineering extends GameSearch{
     }
 
     public Position getHintPos(Position position, boolean player){
-
         if(player){
             Vector v = maxValue(5, position, HUMAN, 1000000.0f, -1000000.0f);
             position = (Position)v.elementAt(1);
