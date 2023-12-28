@@ -41,7 +41,13 @@ public class Domineering extends GameSearch{
         }
     }
 
-
+    public int degre(Position p) {
+        DomineeringPosition dp = (DomineeringPosition) p;
+        int[][] board = dp.board;
+        int horizontalMoves = numberOfHorizontalPos(board);
+        int verticalMoves = numberOfVerticalPos(board);
+        return horizontalMoves + verticalMoves;
+       }
     @Override
     public float positionEvaluation(Position p, boolean player) {
         DomineeringPosition dp = (DomineeringPosition) p;
@@ -53,8 +59,10 @@ public class Domineering extends GameSearch{
 
         countPlayer1=numberOfHorizontalPos(board);
         countPlayer2=numberOfVerticalPos(board);
-
+        float degreValue = degre(p);
         result=countPlayer1-countPlayer2;
+        result += degreValue;
+
         if(player){
             return result;
         }else {

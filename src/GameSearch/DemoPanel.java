@@ -66,7 +66,7 @@ public class DemoPanel extends JFrame {
 
         // Create and populate the level combo box
         levelComboBox = new JComboBox<>(new String[]{"1", "2"});
-        levelComboBox.setSelectedIndex(0); // Set the default selected level
+        levelComboBox.setSelectedIndex(1); // Set the default selected level
 
         loadGameC = new JComboBox<>(new String[]{"None","Game 1", "Game 2","Game 3","Game 4"});
         loadGameC.setSelectedIndex(0); // Set the default selected level
@@ -142,7 +142,7 @@ public class DemoPanel extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 LoadIndex=loadGameC.getSelectedIndex();
-                loadGameFromFile();
+                loadGameFromFile(LoadIndex);
             }
         });
 
@@ -274,19 +274,26 @@ public class DemoPanel extends JFrame {
         }
     }
 
-    private void loadGameFromFile() {
-        try(BufferedReader reader=new BufferedReader(new java.io.FileReader("savedGrid.txt"))){
+    private void loadGameFromFile(int index) {
+        try(BufferedReader reader=new BufferedReader(new java.io.FileReader("new_"+index+".txt"))){
             String line;
             while((line=reader.readLine())!=null){
                 String[] parts=line.split("");
-                int player=Integer.parseInt(parts[0]);
-                int row=Integer.parseInt(parts[1]);
-                int col=Integer.parseInt(parts[2]);
+                int player;
+
+                if (parts[2].equalsIgnoreCase("-")) {
+                     player=-1;
+                } else{
+                        player = Integer.parseInt(parts[2]);
+
+                }
+                int col=Integer.parseInt(parts[1]);
+                int row=Integer.parseInt(parts[0]);
                 System.out.println(player+" "+row+" "+col);
                 if(player==1){
                     node[row][col] = new Node(row, col);
                     node[row][col].setAsCheckedPlayer1();
-                }else if(player==2){
+                }else if(player==-1){
                     node[row][col] = new Node(row, col);
                     node[row][col].setAsCheckedPlayer2();
                 }
@@ -320,6 +327,11 @@ public class DemoPanel extends JFrame {
                 }
             }
         }
+    Position p = new DomineeringPosition();
+
+        DomineeringPosition dp = (DomineeringPosition) p;
+        dp.board= position.board;
+        updatePosition(p);
     }
 
     private void unhighlightNode(Node currentNode) {

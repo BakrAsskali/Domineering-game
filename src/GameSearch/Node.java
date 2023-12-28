@@ -34,6 +34,16 @@ public class Node extends JButton implements ActionListener {
         String s="";
         s=s+col;
         s=s+row;
+        if(this.checked==true){
+            if(this.getBackground()==Color.black){
+                s+="1";
+            }
+            else{
+                s+="-1";
+            }
+        }else {
+            s+="0";
+        }
         return s;
     }
 }
